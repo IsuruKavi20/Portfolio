@@ -44,6 +44,9 @@
 
   </div>
 
+  <!-- Scroll-out darkening overlay -->
+  <div id="about-overlay" class="about-overlay"></div>
+
 </section>
 
 <script>
@@ -154,6 +157,16 @@ document.addEventListener("mousemove", (e) => {
     ease: "power2.out"
   });
 });
+gsap.to("#about-overlay", {
+  opacity: 1,
+  ease: "power2.out",
+  scrollTrigger: {
+    trigger: "#about",
+    start: "center center",
+    end: "bottom top",
+    scrub: true
+  }
+});
 </script>
 
 <style>
@@ -211,6 +224,14 @@ document.addEventListener("mousemove", (e) => {
 .tag:hover {
   border-color: rgba(255, 255, 255, 0.5);
   color: rgba(255, 255, 255, 0.9);
+}
+.about-overlay{
+  position:absolute;
+  inset:0;
+  background:black;
+  opacity:0;
+  pointer-events:none;
+  z-index:30;
 }
 
 </style>
