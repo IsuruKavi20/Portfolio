@@ -1,16 +1,181 @@
 ---
 ---
+<section id="hero" class="relative bg-black text-white h-screen flex flex-col justify-center overflow-hidden opacity-0">
 
-<section class="bg-black text-white min-h-screen flex items-center justify-center">
-  <div class="text-center">
+  <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 items-center px-12 flex-1">
 
-    <h1 class="text-6xl font-light">
-      Isuru
-    </h1>
+    <!-- LEFT: TEXT -->
+    <div>
 
-    <p class="mt-4 text-xl opacity-70">
-      IT Undergraduate – University of Moratuwa
-    </p>
+
+
+      <h1 class="font-light leading-none mb-8" style="font-size: clamp(3rem, 6vw, 5.5rem);">
+        <span class="word block">Isuru K.</span>
+        <span class="word block">Premasiri</span>
+      </h1>
+
+      <div id="hero-line" class="w-16 h-px bg-white mb-8 origin-left scale-x-0" style="opacity:0.3"></div>
+
+      <p id="hero-subtitle" class="text-xl text-gray-400 mb-4 opacity-0">
+        Creative Developer
+      </p>
+
+      <p id="hero-desc" class="text-gray-500 max-w-md leading-relaxed opacity-0">
+        Exploring the boundary between design and code —<br/>
+        building interactive web experiences that feel cinematic.
+      </p>
+
+    </div>
+
+    <!-- RIGHT: PORTRAIT -->
+    <div class="relative h-full flex items-center justify-end" style="max-height: calc(100vh - 4rem)">
+      <img
+        id="hero-portrait"
+        src="/images/portrait.png"
+        alt="Isuru K. Premasiri"
+        class="portrait-img h-full object-cover opacity-0"
+      />
+    </div>
 
   </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-xs tracking-widest text-gray-600 flex flex-col items-center">
+    <span>SCROLL</span>
+    <div class="scroll-line mt-3">
+      <div class="scroll-drip"></div>
+    </div>
+  </div>
+
 </section>
+
+<script>
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+window.addEventListener("landing:done", () => {
+
+  const tl = gsap.timeline();
+
+  tl.to("#hero", { opacity: 1, duration: 0.4, ease: "power2.out" })
+
+    .to("#hero-portrait", {
+      opacity: 1,
+      duration: 1.2,
+      ease: "power3.out"
+    }, "-=0.2")
+
+    .to("#hero-eyebrow", {
+      opacity: 1,
+      duration: 0.5,
+      ease: "power3.out"
+    }, "-=0.9")
+
+    .from(".word", {
+      opacity: 0,
+      y: 40,
+      duration: 0.7,
+      stagger: 0.15,
+      ease: "power3.out"
+    }, "-=0.4")
+
+    .to("#hero-line", {
+      scaleX: 1,
+      duration: 0.6,
+      ease: "power3.out"
+    }, "-=0.3")
+
+    .to("#hero-subtitle", {
+      opacity: 1,
+      duration: 0.5,
+      ease: "power3.out"
+    }, "-=0.2")
+
+    .to("#hero-desc", {
+      opacity: 1,
+      duration: 0.5,
+      ease: "power3.out"
+    }, "-=0.2")
+
+    .to("#navbar", {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: "power3.out"
+    }, "-=0.3");
+
+  // Portrait parallax on mouse move
+  const portrait = document.getElementById("hero-portrait");
+
+  window.addEventListener("mousemove", (e) => {
+    const x = (window.innerWidth / 2 - e.clientX) / 40;
+    const y = (window.innerHeight / 2 - e.clientY) / 40;
+
+    gsap.to(portrait, {
+      x: x,
+      y: y,
+      duration: 0.6,
+      ease: "power2.out"
+    });
+  });
+
+});
+// Fade hero content out on scroll
+gsap.to("#hero > div", {
+  opacity: 0,
+  y: -40,
+  scrollTrigger: {
+    trigger: "#hero",
+    start: "top top",
+    end: "40% top",
+    scrub: true
+  }
+});
+</script>
+
+<style>
+
+.portrait-img {
+  filter: grayscale(100%);
+  mask-image:
+    linear-gradient(to right,  transparent 0%, black 20%, black 80%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, black 5%,  black 85%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right,  transparent 0%, black 20%, black 80%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, black 5%,  black 85%, transparent 100%);
+  -webkit-mask-composite: source-in;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 60px;
+  background: rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-drip {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  width: 1px;
+  height: 30px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.8), transparent);
+  animation: drip 1.6s ease-in-out infinite;
+}
+
+@keyframes drip {
+  0%   { top: -30px; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { top: 60px; opacity: 0; }
+}
+
+.word {
+  display: block;
+}
+
+</style>

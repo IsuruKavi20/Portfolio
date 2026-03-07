@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import Hero from '../components/Hero.astro';
 import Landing from '../components/Landing.astro';
+import Cursor from '../components/Cursor.astro';
+import Navbar from '../components/Navbar.astro';
 ---
 
 <html lang="en">
@@ -10,7 +12,9 @@ import Landing from '../components/Landing.astro';
     <title> Portfolio</title>
   </head>
   <body>
+	<Cursor />
     <Landing />
+	<Navbar />
     <Hero />
   </body>
 </html>

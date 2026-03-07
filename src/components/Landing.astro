@@ -1,27 +1,52 @@
 ---
 ---
+<style>
+.enterBtn {
+  position: relative;
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding-bottom: 6px;
+}
 
+.enter-line {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 0%;
+  background: white;
+  transition: width 0.4s ease;
+}
+
+.enterBtn:hover .enter-line {
+  width: 100%;
+}
+</style>
 <section id="landing" class="fixed inset-0 bg-black text-white flex items-center justify-center z-50">
 
   <canvas id="landingCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
 
-  <div class="relative z-10 text-center">
-
-    <p class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-8">
-       Portfolio — 2026
-    </p>
+  <div class="relative text-center opacity-0 translate-y-6" id="landingContent">
 
     <h1 class="text-6xl font-light mb-10">
-      
+        Isuru K. Premasiri
     </h1>
+    <p class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-8">
+        Portfolio — 2026
+    </p>
 
     <button
-      id="enterBtn"
-      class="text-sm tracking-[0.3em] uppercase border-b border-gray-600 hover:border-white transition pb-1"
+        id="enterBtn"
+        class="enterBtn"
     >
-      click to Enter
+        Click to Enter
+        <span class="enter-line"></span>
     </button>
-
   </div>
 
 </section>
@@ -101,12 +126,25 @@ const enterBtn = document.getElementById("enterBtn");
 
 enterBtn.addEventListener("click", () => {
 
-  landing.style.transition = "opacity 1s ease";
+  landing.style.transition = "opacity 0.8s ease , transform 0.8s ease";
   landing.style.opacity = "0";
+  landing.style.transform = "scale(1.03)";
 
   setTimeout(() => {
     landing.style.display = "none";
-  }, 1000);
+    window.dispatchEvent(new Event("landing:done"));
+  }, 800);
+
+});
+const landingContent = document.getElementById("landingContent");
+
+window.addEventListener("load", () => {
+
+  setTimeout(() => {
+    landingContent.style.transition = "all 1.2s ease";
+    landingContent.style.opacity = "1";
+    landingContent.style.transform = "translateY(0)";
+  }, 300);
 
 });
 
