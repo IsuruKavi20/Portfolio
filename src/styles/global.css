@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
+/* ─── Reset ─────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+html {
+  background: black;
+  scroll-behavior: smooth;
 }
 
 body {

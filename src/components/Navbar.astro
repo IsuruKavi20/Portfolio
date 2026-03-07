@@ -1,43 +1,68 @@
-<nav id="navbar" class="fixed top-10 right-16 z-50 text-xs tracking-[0.3em] text-gray-400 opacity-0" style="transform: translateY(-20px)">
+<nav id="navbar" class="fixed top-10 right-16 z-50 opacity-0" style="transform: translateY(-20px)">
 
-  <ul class="flex gap-10">
-
-    <li>
-      <a href="#about" class="nav-link">ABOUT</a>
-    </li>
-
-    <li>
-      <a href="#work" class="nav-link">WORK</a>
-    </li>
-
-    <li>
-      <a href="#contact" class="nav-link">CONTACT</a>
-    </li>
-
+  <ul class="flex gap-8 text-xs tracking-[0.25em] text-gray-500">
+    <li><a href="#about"     class="nav-link" data-section="about">ABOUT</a></li>
+    <li><a href="#skills"    class="nav-link" data-section="skills">SKILLS</a></li>
+    <li><a href="#projects"  class="nav-link" data-section="projects">PROJECTS</a></li>
+    <li><a href="#education" class="nav-link" data-section="education">EDUCATION</a></li>
+    <li><a href="#contact"   class="nav-link" data-section="contact">CONTACT</a></li>
   </ul>
 
 </nav>
 
+<script>
+// Scrollspy — highlight active nav link based on scroll position
+const sections = ["about", "skills", "projects", "education", "contact"];
+
+function updateActiveLink() {
+  const scrollY = window.scrollY + window.innerHeight * 0.4;
+  let current = "";
+  sections.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollY) current = id;
+  });
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.classList.toggle("nav-active", link.dataset.section === current);
+  });
+}
+
+window.addEventListener("scroll", updateActiveLink, { passive: true });
+updateActiveLink();
+</script>
 
 <style>
 
-.nav-link{
-  position:relative;
+.nav-link {
+  position: relative;
+  transition: color 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
-.nav-link::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-4px;
-  width:0%;
-  height:1px;
-  background:white;
-  transition:width 0.3s ease;
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 1px;
+  background: white;
+  transition: width 0.35s ease;
 }
 
-.nav-link:hover::after{
-  width:100%;
+.nav-link:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-active {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.nav-active::after {
+  width: 100% !important;
 }
 
 </style>

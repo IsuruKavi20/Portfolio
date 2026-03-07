@@ -1,41 +1,45 @@
 ---
 ---
 
-<section id="about" class="relative bg-black text-white min-h-screen flex items-center overflow-hidden py-20">
+<section id="about" class="relative bg-black text-white min-h-screen flex flex-col justify-center py-24 overflow-hidden">
 
-  <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center px-12">
+  <!-- Photo behind the text -->
+  <img
+    id="about-photo"
+    src="/images/about.png"
+    alt="Isuru K. Premasiri"
+    class="about-photo"
+  />
 
-    <!-- LEFT: ABOUT ME clipped text -->
-    <div class="clip-wrapper" id="about-clip">
-      <h2 class="clip-text">ABOUT<br/>ME</h2>
-    </div>
+  <!-- Big letters ON TOP of the photo -->
+  <div id="about-clip" class="relative w-full leading-none z-10">
+    <h2 class="clip-text">ABOUT<br/>ME</h2>
+  </div>
 
-    <!-- RIGHT: Info panel -->
-    <div id="about-info" class="opacity-0" style="transform: translateY(30px)">
+  <!-- Right-side info panel -->
+  <div id="about-info" class="absolute right-16 top-1/2 max-w-sm z-20 opacity-0" style="transform: translateY(calc(-50% + 30px))">
 
-      <p class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-8">WHO I AM</p>
+    <p class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-4">WHO I AM</p>
+    <div id="about-divider" class="w-8 h-px bg-white mb-8 origin-left" style="opacity:0.3"></div>
 
-      <h3 class="text-3xl font-light leading-snug mb-6 text-white">
-        I design with <em class="not-italic text-gray-400">intention</em><br/>
-        and build with <em class="not-italic text-gray-400">precision.</em>
-      </h3>
+    <h3 class="text-3xl font-light leading-snug mb-6 text-white">
+      I design with <em class="not-italic text-gray-400">intention</em><br/>
+      and build with <em class="not-italic text-gray-400">precision.</em>
+    </h3>
 
-      <p class="text-gray-500 leading-relaxed mb-8 max-w-sm">
-        I'm <span class="text-gray-300">Isuru K. Premasiri</span>, a creative developer 
-        exploring interactive web experiences and modern UI design. I believe great interfaces 
-        should feel inevitable — where motion, space, and typography work as one.
-      </p>
+    <p class="text-gray-500 leading-relaxed mb-8 text-sm">
+      I'm <span class="text-gray-300">Isuru K. Premasiri</span>, a creative developer
+      exploring interactive web experiences and modern UI design. I believe great interfaces
+      should feel inevitable — where motion, space, and typography work as one.
+    </p>
 
-      <!-- Tech stack tags -->
-      <div class="flex flex-wrap gap-2">
-        <span class="tag">ASTRO</span>
-        <span class="tag">REACT</span>
-        <span class="tag">GSAP</span>
-        <span class="tag">FIGMA</span>
-        <span class="tag">TAILWIND</span>
-        <span class="tag">THREE.JS</span>
-      </div>
-
+    <div class="flex flex-wrap gap-2">
+      <span class="tag">ASTRO</span>
+      <span class="tag">REACT</span>
+      <span class="tag">GSAP</span>
+      <span class="tag">FIGMA</span>
+      <span class="tag">TAILWIND</span>
+      <span class="tag">THREE.JS</span>
     </div>
 
   </div>
@@ -48,60 +52,149 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Subtle scale on clip text as you scroll through section
 gsap.fromTo("#about-clip",
-  { scale: 0.92, opacity: 0 },
+  { opacity: 0, x: -40 },
   {
-    scale: 1,
-    opacity: 1,
+    opacity: 1, x: 0,
+    duration: 1,
+    ease: "power3.out",
     scrollTrigger: {
       trigger: "#about",
-      start: "top 80%",
-      end: "top 20%",
-      scrub: 1
+      start: "top 75%",
+      toggleActions: "play none none none"
     }
   }
 );
 
-// Info panel fade+slide in
+gsap.fromTo("#about-photo",
+  { opacity: 0, scale: 1.05, yPercent: -50 },
+  {
+    opacity: 1, scale: 1, yPercent: -50,
+    duration: 1.4,
+    ease: "power3.out",
+    scrollTrigger: {
+      trigger: "#about",
+      start: "top 75%",
+      toggleActions: "play none none none"
+    }
+  }
+);
+
 gsap.to("#about-info", {
   opacity: 1,
-  y: 0,
+  y: "-50%",
   duration: 1,
   ease: "power3.out",
   scrollTrigger: {
-    trigger: "#about-info",
-    start: "top 80%",
+    trigger: "#about",
+    start: "top 60%",
     toggleActions: "play none none none"
   }
+});
+
+// Stagger the tech tags in one by one
+gsap.fromTo(".tag",
+  { opacity: 0, y: 12 },
+  {
+    opacity: 1, y: 0,
+    duration: 0.4,
+    stagger: 0.08,
+    ease: "power2.out",
+    scrollTrigger: {
+      trigger: ".tag",
+      start: "top 88%",
+      toggleActions: "play none none none"
+    }
+  }
+);
+
+// Subtle parallax on photo as you scroll through section
+gsap.to("#about-photo", {
+  y: -60,
+  ease: "none",
+  scrollTrigger: {
+    trigger: "#about",
+    start: "top bottom",
+    end: "bottom top",
+    scrub: 1.5
+  }
+});
+
+// Animate the WHO I AM line
+gsap.fromTo("#about-divider",
+  { scaleX: 0 },
+  {
+    scaleX: 1,
+    duration: 0.8,
+    ease: "power3.out",
+    scrollTrigger: {
+      trigger: "#about-info",
+      start: "top 80%",
+      toggleActions: "play none none none"
+    }
+  }
+);
+
+// Cursor parallax on about photo
+const aboutPhoto = document.getElementById("about-photo");
+const aboutSection = document.getElementById("about");
+
+document.addEventListener("mousemove", (e) => {
+  // Only apply when about section is visible
+  const rect = aboutSection.getBoundingClientRect();
+  if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+  const x = (window.innerWidth  / 2 - e.clientX) / 30;
+  const y = (window.innerHeight / 2 - e.clientY) / 30;
+
+  gsap.to(aboutPhoto, {
+    x: x,
+    y: y,
+    duration: 0.8,
+    ease: "power2.out"
+  });
 });
 </script>
 
 <style>
 
-.clip-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+/* Photo sits behind everything */
+.about-photo {
+  position: absolute;
+  left: 3%;
+  top: 50%;
+  width: 38%;
+  object-fit: cover;
+  filter: grayscale(100%) brightness(0.75);
+  z-index: 1;
+
+  /* Fade edges so it blends into black */
+  mask-image:
+    linear-gradient(to right,  transparent 0%, black 12%, black 80%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, black 8%,  black 88%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right,  transparent 0%, black 12%, black 80%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, black 8%,  black 88%, transparent 100%);
+  -webkit-mask-composite: source-in;
 }
 
+/* Big outlined text sits on top of photo using mix-blend-mode */
 .clip-text {
-  font-size: 18vw;
+  font-size: 13vw;
   font-weight: 800;
-  line-height: 0.88;
-  letter-spacing: -0.03em;
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  padding-left: 8vw;
+  display: block;
+  width: 100%;
 
-  background-image: url('/images/about.png');
-  background-size: cover;
-  background-position: center 15%;
-  background-repeat: no-repeat;
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  /* Outlined white letters — photo behind is visible through them */
   color: transparent;
+  -webkit-text-stroke: 3px rgba(255, 255, 255, 0.7);
 
-  filter: brightness(0.9) contrast(1.1);
+  /* mix-blend-mode: difference inverts where text meets the photo = beautiful contrast */
+  mix-blend-mode: difference;
 }
 
 .tag {

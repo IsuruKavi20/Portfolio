@@ -1,0 +1,108 @@
+<section id="skills" class="bg-black text-white py-40 px-16">
+
+  <p class="text-sm tracking-[0.4em] text-gray-500 mb-6">
+    WHAT I KNOW
+  </p>
+
+  <h2 class="text-6xl font-light mb-20">
+    Skills & Technologies
+  </h2>
+
+  <div class="grid md:grid-cols-3 gap-10">
+
+    <!-- Frontend -->
+    <div class="skill-card">
+      <h3 class="skill-title">FRONTEND</h3>
+
+      <div class="skill-tags">
+        <span>HTML</span>
+        <span>CSS</span>
+        <span>JavaScript</span>
+        <span>React</span>
+        <span>Tailwind</span>
+      </div>
+    </div>
+
+    <!-- Backend -->
+    <div class="skill-card">
+      <h3 class="skill-title">BACKEND</h3>
+
+      <div class="skill-tags">
+        <span>Node.js</span>
+        <span>Python</span>
+        <span>Java</span>
+        <span>Spring Boot</span>
+        <span>REST API</span>
+      </div>
+    </div>
+
+    <!-- Database -->
+    <div class="skill-card">
+      <h3 class="skill-title">DATABASE</h3>
+
+      <div class="skill-tags">
+        <span>MySQL</span>
+        <span>MongoDB</span>
+        <span>Firebase</span>
+        <span>PostgreSQL</span>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+<style>
+
+.skill-card{
+  background: rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:40px;
+  transition:all 0.4s ease;
+}
+
+.skill-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(255,255,255,0.2);
+}
+
+.skill-title{
+  font-size:14px;
+  letter-spacing:0.3em;
+  color:#9ca3af;
+  margin-bottom:20px;
+}
+
+.skill-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.skill-tags span{
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  font-size:13px;
+}
+
+</style>
+<script>
+
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.from(".skill-card",{
+  opacity:0,
+  y:80,
+  stagger:0.2,
+  duration:1,
+  scrollTrigger:{
+    trigger:"#skills",
+    start:"top 70%"
+  }
+});
+
+</script>
