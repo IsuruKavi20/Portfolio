@@ -1,0 +1,123 @@
+---
+---
+
+<section id="about" class="relative bg-black text-white min-h-screen flex items-center overflow-hidden py-20">
+
+  <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center px-12">
+
+    <!-- LEFT: ABOUT ME clipped text -->
+    <div class="clip-wrapper" id="about-clip">
+      <h2 class="clip-text">ABOUT<br/>ME</h2>
+    </div>
+
+    <!-- RIGHT: Info panel -->
+    <div id="about-info" class="opacity-0" style="transform: translateY(30px)">
+
+      <p class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-8">WHO I AM</p>
+
+      <h3 class="text-3xl font-light leading-snug mb-6 text-white">
+        I design with <em class="not-italic text-gray-400">intention</em><br/>
+        and build with <em class="not-italic text-gray-400">precision.</em>
+      </h3>
+
+      <p class="text-gray-500 leading-relaxed mb-8 max-w-sm">
+        I'm <span class="text-gray-300">Isuru K. Premasiri</span>, a creative developer 
+        exploring interactive web experiences and modern UI design. I believe great interfaces 
+        should feel inevitable — where motion, space, and typography work as one.
+      </p>
+
+      <!-- Tech stack tags -->
+      <div class="flex flex-wrap gap-2">
+        <span class="tag">ASTRO</span>
+        <span class="tag">REACT</span>
+        <span class="tag">GSAP</span>
+        <span class="tag">FIGMA</span>
+        <span class="tag">TAILWIND</span>
+        <span class="tag">THREE.JS</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Subtle scale on clip text as you scroll through section
+gsap.fromTo("#about-clip",
+  { scale: 0.92, opacity: 0 },
+  {
+    scale: 1,
+    opacity: 1,
+    scrollTrigger: {
+      trigger: "#about",
+      start: "top 80%",
+      end: "top 20%",
+      scrub: 1
+    }
+  }
+);
+
+// Info panel fade+slide in
+gsap.to("#about-info", {
+  opacity: 1,
+  y: 0,
+  duration: 1,
+  ease: "power3.out",
+  scrollTrigger: {
+    trigger: "#about-info",
+    start: "top 80%",
+    toggleActions: "play none none none"
+  }
+});
+</script>
+
+<style>
+
+.clip-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.clip-text {
+  font-size: 18vw;
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+
+  background-image: url('/images/about.png');
+  background-size: cover;
+  background-position: center 15%;
+  background-repeat: no-repeat;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.tag {
+  display: inline-block;
+  padding: 5px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.tag:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+</style>
