@@ -1,21 +1,33 @@
 ---
 ---
 
-<section id="skills" class="bg-black text-white py-40 overflow-hidden">
+<section id="skills" class="relative bg-black text-white py-40 overflow-hidden">
 
-  <!-- Header -->
-  <div class="max-w-7xl mx-auto px-16 mb-24">
-    <p id="skills-label" class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-5 opacity-0">CAPABILITIES</p>
-    <h2 id="skills-title" class="text-5xl font-light text-white opacity-0">
+  <!-- Header — line + label + compact title (same structure as projects, smaller font) -->
+  <div class="max-w-7xl mx-auto px-6 md:px-16 mb-24">
+
+    <div class="flex items-center gap-6 mb-6">
+      <div id="skills-line" class="skills-line"></div>
+      <p id="skills-label" class="text-xs uppercase tracking-[0.4em] text-gray-500 opacity-0">CAPABILITIES</p>
+    </div>
+
+    <h2 id="skills-title" class="skills-title opacity-0">
       Skills &amp; Technologies
     </h2>
+
+    <p id="skills-desc" class="skills-desc opacity-0">
+      A growing toolkit of languages, frameworks, and tools<br/>
+      built through projects, study, and hands-on experience.
+    </p>
+
   </div>
 
-  <!-- Skills Grid — 4 cols separated by hairline -->
-  <div class="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- Skills Grid — 4 cols with hairline separator -->
+  <div class="max-w-7xl mx-auto px-6 md:px-16 grid md:grid-cols-2 lg:grid-cols-4 divide-x divide-white/[0.06]">
 
     <!-- Frontend -->
     <div class="skill-card" id="skill-col-0">
+      <div class="skill-bar"></div>
       <p class="skill-category">FRONTEND</p>
       <ul class="skill-list">
         <li>HTML5</li>
@@ -30,6 +42,7 @@
 
     <!-- Backend -->
     <div class="skill-card" id="skill-col-1">
+      <div class="skill-bar"></div>
       <p class="skill-category">BACKEND</p>
       <ul class="skill-list">
         <li>Node.js</li>
@@ -42,6 +55,7 @@
 
     <!-- Database -->
     <div class="skill-card" id="skill-col-2">
+      <div class="skill-bar"></div>
       <p class="skill-category">DATABASE</p>
       <ul class="skill-list">
         <li>MySQL</li>
@@ -52,6 +66,7 @@
 
     <!-- Tools -->
     <div class="skill-card" id="skill-col-3">
+      <div class="skill-bar"></div>
       <p class="skill-category">TOOLS</p>
       <ul class="skill-list">
         <li>Git &amp; GitHub</li>
@@ -64,27 +79,74 @@
 
   </div>
 
+  <!-- Scroll-out darkening overlay -->
+  <div id="skills-overlay" class="skills-overlay"></div>
+
 </section>
-
-
-
 
 <style>
 
-#skills-label,
-#skills-title {
+/* ── Header ── */
+.skills-line {
+  width: 0px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Same font size as original — compact, not giant */
+.skills-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: white;
+  font-family: 'Inter', sans-serif;
   transform: translateY(16px);
 }
 
+.skills-desc {
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.35);
+  max-width: 480px;
+  font-family: 'Inter', sans-serif;
+  transform: translateY(16px);
+}
+
+#skills-label {
+  transform: translateY(16px);
+}
+
+/* ── Cards ── */
 .skill-card {
+  position: relative;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 28px 24px;
-  transition: border-color 0.4s ease;
+  padding: 32px 28px;
+  overflow: hidden;
+  /* Subtle border-color transition only — no lift/translateY in a flush grid */
+  transition: background 0.4s ease;
 }
 
 .skill-card:hover {
-  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Glowing top accent bar — same as project card */
+.skill-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+
+.skill-card:hover .skill-bar {
+  transform: scaleX(1);
 }
 
 .skill-category {
@@ -93,6 +155,7 @@
   color: rgba(255, 255, 255, 0.25);
   margin-bottom: 28px;
   font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
 }
 
 .skill-list {
@@ -110,6 +173,8 @@
   font-family: 'Inter', sans-serif;
   transition: color 0.25s ease;
   cursor: default;
+  /* Ensure no background/border-box interference */
+  background: transparent;
 }
 
 .skill-list li:last-child {
@@ -117,7 +182,17 @@
 }
 
 .skill-list li:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Scroll-out overlay ── */
+.skills-overlay {
+  position: absolute;
+  inset: 0;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
 }
 
 </style>

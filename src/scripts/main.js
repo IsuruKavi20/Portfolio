@@ -266,22 +266,25 @@ gsap.registerPlugin(ScrollTrigger);
 
 
 // ─────────────────────────────────────────────
-// 6. SKILLS SECTION  (from Skills.astro)
+// 6. SKILLS SECTION
 // ─────────────────────────────────────────────
 (function initSkills() {
-  gsap.to("#skills-label", {
-    opacity: 1, y: 0, duration: 0.6, ease: "power3.out",
+  // Animate the horizontal line — same as Projects
+  gsap.to("#skills-line", {
+    width: 48, duration: 0.8, ease: "power3.out",
     scrollTrigger: { trigger: "#skills", start: "top 80%", toggleActions: "play none none none" }
   });
 
-  gsap.to("#skills-title", {
-    opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
+  // Label + title + desc stagger — same as Projects
+  gsap.to(["#skills-label", "#skills-title", "#skills-desc"], {
+    opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
     scrollTrigger: { trigger: "#skills", start: "top 75%", toggleActions: "play none none none" }
   });
 
+  // Cards cascade in
   gsap.fromTo(
     ["#skill-col-0", "#skill-col-1", "#skill-col-2", "#skill-col-3"],
-    { opacity: 0, y: 50 },
+    { opacity: 0, y: 40 },
     {
       opacity: 1, y: 0, duration: 0.8, stagger: 0.12, ease: "power3.out",
       scrollTrigger: { trigger: "#skills", start: "top 65%", toggleActions: "play none none none" }
@@ -295,4 +298,45 @@ gsap.registerPlugin(ScrollTrigger);
       scrollTrigger: { trigger: "#skills", start: "top 60%", toggleActions: "play none none none" }
     }
   );
+
+  // Scroll-out overlay darkening
+  gsap.to("#skills-overlay", {
+    opacity: 1, ease: "power2.out",
+    scrollTrigger: { trigger: "#skills", start: "center center", end: "bottom top", scrub: true }
+  });
 })();
+
+
+// ─────────────────────────────────────────────
+// 7. PROJECTS SECTION
+// ─────────────────────────────────────────────
+(function initProjects() {
+  // Animate the horizontal line
+  gsap.to("#proj-line", {
+    width: 48, duration: 0.8, ease: "power3.out",
+    scrollTrigger: { trigger: "#projects", start: "top 80%", toggleActions: "play none none none" }
+  });
+
+  // Label + title + desc stagger
+  gsap.to(["#proj-label", "#proj-title", "#proj-desc"], {
+    opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
+    scrollTrigger: { trigger: "#projects", start: "top 75%", toggleActions: "play none none none" }
+  });
+
+  // Cards cascade in
+  gsap.fromTo(".proj-card-wrap",
+    { opacity: 0, y: 40 },
+    {
+      opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
+      scrollTrigger: { trigger: "#projects", start: "top 65%", toggleActions: "play none none none" }
+    }
+  );
+
+  // Scroll-out overlay darkening
+  gsap.to("#projects-overlay", {
+    opacity: 1, ease: "power2.out",
+    scrollTrigger: { trigger: "#projects", start: "center center", end: "bottom top", scrub: true }
+  });
+})();
+
+
