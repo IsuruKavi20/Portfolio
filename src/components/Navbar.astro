@@ -10,25 +10,8 @@
 
 </nav>
 
-<script>
-// Scrollspy — highlight active nav link based on scroll position
-const sections = ["about", "skills", "projects", "education", "contact"];
 
-function updateActiveLink() {
-  const scrollY = window.scrollY + window.innerHeight * 0.4;
-  let current = "";
-  sections.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el && el.offsetTop <= scrollY) current = id;
-  });
-  document.querySelectorAll(".nav-link").forEach((link) => {
-    link.classList.toggle("nav-active", link.dataset.section === current);
-  });
-}
 
-window.addEventListener("scroll", updateActiveLink, { passive: true });
-updateActiveLink();
-</script>
 
 <style>
 

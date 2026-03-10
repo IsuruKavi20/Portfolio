@@ -66,37 +66,8 @@
 
 </section>
 
-<script>
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
 
-gsap.to("#skills-label", {
-  opacity: 1, y: 0, duration: 0.6, ease: "power3.out",
-  scrollTrigger: { trigger: "#skills", start: "top 80%", toggleActions: "play none none none" }
-});
-gsap.to("#skills-title", {
-  opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
-  scrollTrigger: { trigger: "#skills", start: "top 75%", toggleActions: "play none none none" }
-});
 
-gsap.fromTo(
-  ["#skill-col-0","#skill-col-1","#skill-col-2","#skill-col-3"],
-  { opacity: 0, y: 50 },
-  {
-    opacity: 1, y: 0, duration: 0.8, stagger: 0.12, ease: "power3.out",
-    scrollTrigger: { trigger: "#skills", start: "top 65%", toggleActions: "play none none none" }
-  }
-);
-
-gsap.fromTo(".skill-list li",
-  { opacity: 0, x: -14 },
-  {
-    opacity: 1, x: 0, duration: 0.45, stagger: 0.04, ease: "power2.out",
-    scrollTrigger: { trigger: "#skills", start: "top 60%", toggleActions: "play none none none" }
-  }
-);
-</script>
 
 <style>
 

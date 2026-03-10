@@ -4,7 +4,7 @@ import Hero from '../components/Hero.astro';
 import Landing from '../components/Landing.astro';
 import Cursor from '../components/Cursor.astro';
 import Navbar from '../components/Navbar.astro';
-import About from '../components/About .astro';
+import About from '../components/About.astro';
 import Skills from '../components/Skills.astro';
 ---
 
@@ -19,11 +19,16 @@ import Skills from '../components/Skills.astro';
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-	<Cursor />
+    <Cursor />
     <Landing />
-	<Navbar />
+    <Navbar />
     <Hero />
-	<About />
-	<Skills />
+    <About />
+    <Skills />
   </body>
 </html>
+
+<!-- Single consolidated script entry point -->
+<script>
+  import '../scripts/main.js';
+</script>
