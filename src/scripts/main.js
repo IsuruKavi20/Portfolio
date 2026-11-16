@@ -6,8 +6,11 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { createParticleField } from "./particles.js";
+import { initSmoothScroll } from "./scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
+
+initSmoothScroll();
 
 // ─────────────────────────────────────────────
 // 1. CUSTOM CURSOR  (mouse devices only)

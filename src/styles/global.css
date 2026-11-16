@@ -41,8 +41,15 @@
 
 html {
   background: var(--bg);
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+/* Touch devices: the browser glides to anchor links by itself.
+   Mouse devices get Lenis (scroll.js) instead; two smoothers would fight. */
+@media (hover: none), (pointer: coarse) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
