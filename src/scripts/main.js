@@ -56,61 +56,11 @@ gsap.registerPlugin(ScrollTrigger);
 // 2. LANDING SCREEN  (from Landing.astro)
 // ─────────────────────────────────────────────
 (function initLanding() {
-  const canvas  = document.getElementById("landingCanvas");
   const landing = document.getElementById("landing");
   const enterBtn = document.getElementById("enterBtn");
   const landingContent = document.getElementById("landingContent");
 
-  if (!canvas || !landing || !enterBtn || !landingContent) return;
-
-  const ctx = canvas.getContext("2d");
-  let w, h;
-
-  function resize() {
-    w = canvas.width  = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener("resize", resize);
-
-  class Line {
-    constructor() { this.reset(); }
-    reset() {
-      this.x       = Math.random() * w;
-      this.y       = Math.random() * h;
-      this.len     = 80 + Math.random() * 120;
-      this.angle   = Math.random() * Math.PI * 2;
-      this.speed   = 0.003 + Math.random() * 0.006;
-      this.life    = 0;
-      this.maxLife = 200 + Math.random() * 200;
-    }
-    draw() {
-      this.life++;
-      this.angle += this.speed;
-      const ex = this.x + Math.cos(this.angle) * this.len;
-      const ey = this.y + Math.sin(this.angle) * this.len;
-      ctx.beginPath();
-      ctx.strokeStyle = "rgba(255,255,255,0.09)";
-      ctx.lineWidth = 1;
-      ctx.moveTo(this.x, this.y);
-      ctx.quadraticCurveTo(
-        (this.x + ex) / 2 + Math.cos(this.angle) * 10,
-        (this.y + ey) / 2 + Math.sin(this.angle) * 10,
-        ex, ey
-      );
-      ctx.stroke();
-      if (this.life > this.maxLife) this.reset();
-    }
-  }
-
-  const lines = Array.from({ length: 40 }, () => new Line());
-
-  function animate() {
-    ctx.clearRect(0, 0, w, h);
-    lines.forEach(l => l.draw());
-    requestAnimationFrame(animate);
-  }
-  animate();
+  if (!landing || !enterBtn || !landingContent) return;
 
   enterBtn.addEventListener("click", () => {
     landing.style.transition = "opacity 0.8s ease, transform 0.8s ease";
@@ -168,6 +118,7 @@ gsap.registerPlugin(ScrollTrigger);
       .to("#hero-line", { scaleX: 1, duration: 0.6, ease: "power3.out" }, "-=0.3")
       .to("#hero-subtitle", { opacity: 1, duration: 0.5, ease: "power3.out" }, "-=0.2")
       .to("#hero-desc", { opacity: 1, duration: 0.5, ease: "power3.out" }, "-=0.2")
+      .to("#hero-socials", { opacity: 1, duration: 0.5, ease: "power3.out" }, "-=0.1")
       .to("#navbar", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.3");
 
     // Portrait parallax on mouse move
@@ -340,3 +291,52 @@ gsap.registerPlugin(ScrollTrigger);
 })();
 
 
+// ─────────────────────────────────────────────
+// 8. EDUCATION SECTION
+// ─────────────────────────────────────────────
+(function initEducation() {
+  // Animate the horizontal line
+  gsap.to("#edu-line", {
+    width: 48, duration: 0.8, ease: "power3.out",
+    scrollTrigger: { trigger: "#education", start: "top 80%", toggleActions: "play none none none" }
+  });
+
+  // Label + title + desc stagger
+  gsap.to(["#edu-label", "#edu-title", "#edu-desc"], {
+    opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
+    scrollTrigger: { trigger: "#education", start: "top 75%", toggleActions: "play none none none" }
+  });
+
+  // Card fade + rise
+  gsap.to("#edu-card", {
+    opacity: 1, y: 0, duration: 0.9, ease: "power3.out",
+    scrollTrigger: { trigger: "#education", start: "top 65%", toggleActions: "play none none none" }
+  });
+
+  // Scroll-out overlay darkening
+  gsap.to("#education-overlay", {
+    opacity: 1, ease: "power2.out",
+    scrollTrigger: { trigger: "#education", start: "center center", end: "bottom top", scrub: true }
+  });
+})();
+
+
+// ─────────────────────────────────────────────
+// 9. CONTACT SECTION
+// ─────────────────────────────────────────────
+(function initContact() {
+  gsap.to("#contact-line", {
+    width: 48, duration: 0.8, ease: "power3.out",
+    scrollTrigger: { trigger: "#contact", start: "top 80%", toggleActions: "play none none none" }
+  });
+
+  gsap.to(["#contact-label", "#contact-title", "#contact-desc"], {
+    opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
+    scrollTrigger: { trigger: "#contact", start: "top 75%", toggleActions: "play none none none" }
+  });
+
+  gsap.to("#contact-body", {
+    opacity: 1, y: 0, duration: 0.9, ease: "power3.out",
+    scrollTrigger: { trigger: "#contact", start: "top 65%", toggleActions: "play none none none" }
+  });
+})();

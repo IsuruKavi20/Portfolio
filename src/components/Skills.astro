@@ -124,12 +124,12 @@
   background: transparent;
   padding: 32px 28px;
   overflow: hidden;
-  /* Subtle border-color transition only — no lift/translateY in a flush grid */
-  transition: background 0.4s ease;
+  transition: background 0.4s ease, transform 0.4s ease;
 }
 
 .skill-card:hover {
   background: rgba(255, 255, 255, 0.02);
+  transform: translateY(-4px) !important;
 }
 
 /* Glowing top accent bar — same as project card */

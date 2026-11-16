@@ -1,4 +1,5 @@
 ---
+import cursor from '../components/Cursor.astro';
 ---
 <style>
 .enterBtn {
@@ -29,9 +30,18 @@
 </style>
 <section id="landing" class="fixed inset-0 bg-black text-white flex items-center justify-center z-50">
 
-  <canvas id="landingCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+  <!-- Spline 3D Background Iframe -->
+  <iframe 
+    src='https://my.spline.design/particles-GyNz08Gkdf1tLRz7jXs3APWz/' 
+    frameborder='0' 
+    style="width: 100vw; height: 100vh;" 
+    class="absolute inset-0 z-0"
+  ></iframe>
 
-  <div class="relative text-center opacity-0 translate-y-6" id="landingContent">
+  <!-- We need an overlay so the button remains clickable without Spline intercepting everything -->
+  <div class="absolute inset-0 bg-black/40 z-10 pointer-events-none"></div>
+
+  <div class="relative text-center opacity-0 translate-y-6 z-20 pointer-events-none" id="landingContent">
 
     <h1 class="text-6xl font-light mb-10">
         Isuru K. Premasiri
@@ -42,7 +52,7 @@
 
     <button
         id="enterBtn"
-        class="enterBtn"
+        class="enterBtn pointer-events-auto"
     >
         Click to Enter
         <span class="enter-line"></span>
@@ -50,4 +60,4 @@
   </div>
 
 </section>
-
+

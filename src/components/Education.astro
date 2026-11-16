@@ -1,0 +1,249 @@
+---
+---
+
+<section id="education" class="relative bg-black text-white py-40 overflow-hidden">
+
+  <div class="max-w-7xl mx-auto px-6 md:px-16">
+
+    <!-- Header — same pattern as Skills & Projects -->
+    <div class="mb-20">
+
+      <div class="flex items-center gap-6 mb-6">
+        <div id="edu-line" class="edu-line"></div>
+        <p id="edu-label" class="text-xs uppercase tracking-[0.4em] text-gray-500 opacity-0">
+          Academic Background
+        </p>
+      </div>
+
+      <h2 id="edu-title" class="edu-title opacity-0">
+        Education
+      </h2>
+
+      <p id="edu-desc" class="edu-desc opacity-0">
+        My academic foundation in information technology continues to shape how I<br/>
+        approach design, development, and interactive digital experiences.
+      </p>
+
+    </div>
+
+    <!-- Education card -->
+    <div id="edu-card" class="edu-card opacity-0">
+
+      <!-- Glowing top bar (matches project/skill card) -->
+      <div class="edu-bar"></div>
+
+      <div class="edu-card-inner">
+
+        <!-- Left: institution info -->
+        <div class="edu-left">
+          <p class="edu-year">2023 — Present</p>
+
+          <h3 class="edu-institution">University of Moratuwa</h3>
+
+          <p class="edu-degree">IT Undergraduate</p>
+
+          <!-- Vertical divider line -->
+          <div id="edu-divider" class="edu-divider"></div>
+        </div>
+
+        <!-- Right: description + tags -->
+        <div class="edu-right">
+          <p class="edu-body">
+            Currently pursuing undergraduate studies in Information Technology,
+            with growing interests in frontend development, UI design, motion,
+            and building clean digital experiences for the web.
+          </p>
+
+          <div class="edu-tags">
+            <span class="edu-tag">Web Development</span>
+            <span class="edu-tag">UI Design</span>
+            <span class="edu-tag">Interactive Experiences</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Scroll-out darkening overlay -->
+  <div id="education-overlay" class="edu-overlay"></div>
+
+</section>
+
+<style>
+
+/* ── Header ── */
+.edu-line {
+  width: 0px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.edu-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  transform: translateY(16px);
+}
+
+.edu-desc {
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.35);
+  max-width: 540px;
+  font-family: 'Inter', sans-serif;
+  transform: translateY(16px);
+}
+
+#edu-label {
+  transform: translateY(16px);
+}
+
+/* ── Card ── */
+.edu-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 48px;
+  overflow: hidden;
+  transition: background 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+  transform: translateY(30px);
+}
+
+.edu-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-4px) !important;
+}
+
+/* Glowing top bar — same as project/skill cards */
+.edu-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+.edu-card:hover .edu-bar {
+  transform: scaleX(1);
+}
+
+.edu-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+@media (min-width: 768px) {
+  .edu-card-inner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 80px;
+  }
+}
+
+/* Left */
+.edu-left {
+  flex-shrink: 0;
+  min-width: 220px;
+}
+
+.edu-year {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.25);
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.edu-institution {
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.edu-degree {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Animated vertical divider — desktop only */
+.edu-divider {
+  display: none;
+}
+@media (min-width: 768px) {
+  .edu-divider {
+    display: block;
+    position: absolute;
+    left: calc(220px + 48px + 40px);
+    top: 48px;
+    bottom: 48px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Right */
+.edu-right {
+  flex: 1;
+}
+
+.edu-body {
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 28px;
+}
+
+.edu-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.edu-tag {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 12px;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.edu-card:hover .edu-tag {
+  color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Scroll-out overlay ── */
+.edu-overlay {
+  position: absolute;
+  inset: 0;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+
+</style>
