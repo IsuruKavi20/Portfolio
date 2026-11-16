@@ -1,0 +1,57 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import Cursor from '../components/Cursor.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Isuru K. Premasiri — Creative Developer',
+  description = 'Isuru K. Premasiri — Creative Developer & IT Undergraduate at University of Moratuwa. Building cinematic web experiences.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <title>{title}</title>
+
+    <!-- Runs before first paint: decides whether animation is allowed and
+         whether this visitor has already passed the landing screen. -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          root.classList.add('motion');
+        }
+        try {
+          // Skip the landing only when arriving from another page of the site.
+          // A manual refresh shows it again.
+          var nav = performance.getEntriesByType('navigation')[0];
+          var isReload = nav && nav.type === 'reload';
+          if (sessionStorage.getItem('entered') && !isReload) root.classList.add('entered');
+        } catch (e) {
+          /* storage blocked: the landing screen simply shows again */
+        }
+      })();
+    </script>
+    <noscript><style>#landing { display: none; }</style></noscript>
+  </head>
+  <body>
+    <a class="skip-link sr-only-focusable" href="#main">Skip to content</a>
+    <Cursor />
+    <slot name="chrome" />
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

@@ -5,16 +5,25 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import { createParticleField } from "./particles.js";
+
 gsap.registerPlugin(ScrollTrigger);
 
 // ─────────────────────────────────────────────
-// 1. CUSTOM CURSOR  (from Cursor.astro)
+// 1. CUSTOM CURSOR  (mouse devices only)
 // ─────────────────────────────────────────────
 (function initCursor() {
   const dot  = document.getElementById("cursorDot");
   const ring = document.getElementById("cursorRing");
+  const hasMouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  if (!dot || !ring) return;
+  if (!dot || !ring || !hasMouse) return;
+
+  const IDLE_HIDE_MS = 1200;
+  const RING_FOLLOW  = 0.15;
+  const INTERACTIVE  = "a, button, input, textarea, [data-cursor]";
+
+  document.documentElement.classList.add("has-cursor");
 
   let mouseX = 0, mouseY = 0;
   let ringX  = 0, ringY  = 0;
@@ -33,21 +42,21 @@ gsap.registerPlugin(ScrollTrigger);
     idleTimer = setTimeout(() => {
       dot.style.opacity  = "0";
       ring.style.opacity = "0";
-    }, 1200);
+    }, IDLE_HIDE_MS);
   });
 
   function animateRing() {
-    ringX += (mouseX - ringX) * 0.15;
-    ringY += (mouseY - ringY) * 0.15;
+    ringX += (mouseX - ringX) * RING_FOLLOW;
+    ringY += (mouseY - ringY) * RING_FOLLOW;
     ring.style.left = ringX + "px";
     ring.style.top  = ringY + "px";
     requestAnimationFrame(animateRing);
   }
   animateRing();
 
-  document.querySelectorAll("button, a").forEach((el) => {
-    el.addEventListener("mouseenter", () => ring.classList.add("cursor-hover"));
-    el.addEventListener("mouseleave", () => ring.classList.remove("cursor-hover"));
+  // One listener on the document also covers elements added later
+  document.addEventListener("mouseover", (e) => {
+    ring.classList.toggle("cursor-hover", Boolean(e.target.closest?.(INTERACTIVE)));
   });
 })();
 
@@ -56,29 +65,70 @@ gsap.registerPlugin(ScrollTrigger);
 // 2. LANDING SCREEN  (from Landing.astro)
 // ─────────────────────────────────────────────
 (function initLanding() {
-  const landing = document.getElementById("landing");
+  const root     = document.documentElement;
+  const landing  = document.getElementById("landing");
   const enterBtn = document.getElementById("enterBtn");
-  const landingContent = document.getElementById("landingContent");
+  const content  = document.getElementById("landingContent");
+  const canvas   = document.getElementById("landingCanvas");
+  const scene    = document.getElementById("landingScene");
 
-  if (!landing || !enterBtn || !landingContent) return;
+  if (!landing || !enterBtn || !content) return;
 
-  enterBtn.addEventListener("click", () => {
-    landing.style.transition = "opacity 0.8s ease, transform 0.8s ease";
-    landing.style.opacity    = "0";
-    landing.style.transform  = "scale(1.03)";
-    setTimeout(() => {
-      landing.style.display = "none";
-      window.dispatchEvent(new Event("landing:done"));
-    }, 800);
-  });
+  const FADE_MS        = 900;   // matches the CSS transition on .landing
+  const WARP_LEAD_MS   = 350;   // particles rush first, then the fade starts
+  const WARP_TIMEOUT   = 1400;  // never wait on the animation longer than this
+  const CONTENT_IN_MS  = 300;
 
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      landingContent.style.transition = "all 1.2s ease";
-      landingContent.style.opacity    = "1";
-      landingContent.style.transform  = "translateY(0)";
-    }, 300);
-  });
+  const announceDone = () => window.dispatchEvent(new Event("landing:done"));
+
+  // Already entered in this browser session: skip straight to the site.
+  // The timeout lets the sections below register their listeners first.
+  if (root.classList.contains("entered")) {
+    setTimeout(announceDone, 0);
+    return;
+  }
+
+  const motionAllowed = root.classList.contains("motion");
+  const isDesktop = window.matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)").matches;
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let field = null;
+
+  document.body.classList.add("is-locked");
+
+  if (isDesktop && scene) {
+    scene.src = scene.dataset.src;
+    scene.classList.add("is-on");
+    enterBtn.querySelector(".enter-label").textContent = "Click to Enter";
+  } else if (canvas) {
+    canvas.classList.add("is-on");
+    field = createParticleField(canvas, { animate: motionAllowed });
+  }
+
+  setTimeout(() => content.classList.add("is-in"), CONTENT_IN_MS);
+
+  enterBtn.addEventListener("click", async () => {
+    enterBtn.disabled = true;
+
+    if (field && motionAllowed) {
+      const warpDone = Promise.race([field.warp(), wait(WARP_TIMEOUT)]);
+      await wait(WARP_LEAD_MS);
+      landing.classList.add("is-leaving");
+      await warpDone;
+    } else {
+      landing.classList.add("is-leaving");
+    }
+    await wait(motionAllowed ? FADE_MS : 0);
+
+    field?.stop();
+    landing.style.display = "none";
+    document.body.classList.remove("is-locked");
+    try {
+      sessionStorage.setItem("entered", "1");
+    } catch {
+      // storage blocked: the landing screen simply shows again next time
+    }
+    announceDone();
+  }, { once: true });
 })();
 
 

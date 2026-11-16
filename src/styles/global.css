@@ -1,21 +1,342 @@
 @import "tailwindcss";
 
-/* ─── Reset ─────────────────────────────────────────────── */
-*, *::before, *::after {
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ─── Design tokens ─────────────────────────────────────── */
+:root {
+  --bg: #000;
+  --fg: #fff;
+  --fg-strong: rgba(255, 255, 255, 0.88);
+  --fg-muted: rgba(255, 255, 255, 0.62);
+  --fg-soft: rgba(255, 255, 255, 0.5);
+  --fg-faint: rgba(255, 255, 255, 0.4);
+
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --surface: rgba(255, 255, 255, 0.02);
+  --surface-hover: rgba(255, 255, 255, 0.045);
+
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --section-y: clamp(5.5rem, 14vw, 10rem);
+  --page-max: 80rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 0.25s;
+  --dur: 0.45s;
+
+  --z-nav: 50;
+  --z-landing: 60;
+  --z-menu: 70;
+  --z-cursor: 9999;
+}
+
+/* ─── Base ──────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
-  background: black;
+  background: var(--bg);
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  padding: 0;
-  background: black;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
-html {
-  background: black;
+body.is-locked {
+  overflow: hidden;
+}
+
+:focus-visible {
+  outline: 1px solid var(--fg-strong);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: var(--z-cursor);
+  padding: 10px 16px;
+  background: #fff;
+  color: #000;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ─── Layout helpers ────────────────────────────────────── */
+.container-x {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.sec {
+  position: relative;
+  padding-block: var(--section-y);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ─── Section header (line + label + title + description) ─ */
+.sec-head {
+  margin-bottom: clamp(3rem, 8vw, 5rem);
+}
+
+.sec-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sec-line {
+  width: 48px;
+  height: 1px;
+  background: var(--line-strong);
+  transform-origin: left;
+}
+
+.sec-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--fg-soft);
+}
+
+.sec-title {
+  font-size: clamp(2rem, 7vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.sec-desc {
+  margin-top: 1rem;
+  max-width: 34rem;
+  font-size: 0.875rem;
+  line-height: 1.9;
+  color: var(--fg-soft);
+}
+
+/* Darkens a section as it scrolls away */
+.sec-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Shared pieces ─────────────────────────────────────── */
+.chip {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-soft);
+  transition: color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+}
+
+/* Card surface with a hairline that draws across the top */
+.card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  transition:
+    background var(--dur) ease,
+    border-color var(--dur) ease,
+    transform var(--dur) var(--ease-out);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.card.is-active {
+  background: var(--surface-hover);
+  border-color: var(--line-strong);
+}
+
+.card.is-active::before {
+  transform: scaleX(1);
+}
+
+.card.is-active .chip {
+  color: var(--fg-muted);
+  border-color: var(--line-strong);
+}
+
+@media (hover: hover) {
+  .card:hover {
+    background: var(--surface-hover);
+    border-color: var(--line-strong);
+    transform: translateY(-4px);
+  }
+
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .card:hover .chip {
+    color: var(--fg-muted);
+    border-color: var(--line-strong);
+  }
+}
+
+/* Touch feedback: every tappable thing answers the finger */
+.pressable {
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) ease;
+}
+
+.pressable:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+}
+
+/* Text link with a hairline that draws underneath */
+.line-link {
+  position: relative;
+  color: var(--fg-soft);
+  transition: color var(--dur-fast) ease;
+}
+
+.line-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.line-link:hover,
+.line-link:active,
+.line-link.is-current {
+  color: var(--fg-strong);
+}
+
+.line-link:hover::after,
+.line-link:active::after,
+.line-link.is-current::after {
+  transform: scaleX(1);
+}
+
+/* ─── Swipe row: carousel on phones, grid from tablet up ── */
+.snap-row {
+  display: flex;
+  gap: 12px;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.snap-row::-webkit-scrollbar {
+  display: none;
+}
+
+.snap-row > * {
+  flex: 0 0 84%;
+  scroll-snap-align: start;
+}
+
+.snap-count {
+  margin-top: 1.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  color: var(--fg-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  .snap-row {
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+
+  .snap-row > * {
+    flex: initial;
+  }
+
+  .snap-count {
+    display: none;
+  }
+}
+
+/* ─── Motion ────────────────────────────────────────────── */
+/* `.motion` is set on <html> before paint only when animation is allowed,
+   so content stays visible without JavaScript or with reduced motion. */
+.motion .sec-label,
+.motion .sec-title,
+.motion .sec-desc,
+.motion [data-reveal],
+.motion [data-hero] {
+  visibility: hidden;
+}
+
+.motion .sec-line,
+.motion [data-hero-line] {
+  transform: scaleX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

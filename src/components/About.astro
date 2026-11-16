@@ -1,13 +1,17 @@
 ---
+import { Image } from 'astro:assets';
+import aboutPhoto from '../assets/images/about.png';
 ---
 
 <section id="about" class="relative bg-black text-white min-h-screen flex flex-col justify-center py-24 overflow-hidden">
 
   <!-- Photo behind the text -->
-  <img
+  <Image
     id="about-photo"
-    src="/images/about.png"
-    alt="Isuru K. Premasiri"
+    src={aboutPhoto}
+    alt="Isuru K. Premasiri seated in a studio"
+    widths={[480, 768]}
+    sizes="(min-width: 768px) 38vw, 90vw"
     class="about-photo"
   />
 

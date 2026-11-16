@@ -1,48 +1,53 @@
 ---
-
 ---
 
-<style>
-  body {
-    cursor: none;
-  }
-  button,
-  a {
-    cursor: pointer;
-  }
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
+<style is:global>
   .cursor-dot,
   .cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    z-index: 9999;
+    display: none;
   }
 
-  .cursor-dot {
-    width: 5px;
-    height: 5px;
-    background: white;
-    border-radius: 50%;
-  }
+  /* Only devices with a real mouse get the custom cursor */
+  @media (hover: hover) and (pointer: fine) {
+    html.has-cursor,
+    html.has-cursor * {
+      cursor: none !important;
+    }
 
-  .cursor-ring {
-    width: 25px;
-    height: 25px;
-    border: 1px solid rgba(255,255,255,0.4);
-    border-radius: 50%;
-    z-index: 9997;
+    html.has-cursor .cursor-dot,
+    html.has-cursor .cursor-ring {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .cursor-dot {
+      z-index: var(--z-cursor);
+      width: 5px;
+      height: 5px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .cursor-ring {
+      z-index: calc(var(--z-cursor) - 1);
+      width: 25px;
+      height: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+    }
+
+    html.has-cursor .cursor-ring.cursor-hover {
+      transform: translate(-50%, -50%) scale(1.5);
+      border-color: #fff;
+    }
   }
-  .cursor-hover {
-  transform: translate(-50%, -50%) scale(1.5);
-  border-color: white;
-  }
- 
 </style>
-
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
