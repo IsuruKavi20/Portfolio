@@ -10,12 +10,15 @@
 const POINTS = 110;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
+// spin is in turns per second (1 = one full rotation each second)
 const MOODS = {
-  idle:     { spin: 0.012, breath: 0.05, squeeze: 0,    brightness: 0.85 },
-  thinking: { spin: 0.06,  breath: 0.02, squeeze: 0.18, brightness: 1 },
-  acting:   { spin: 0.025, breath: 0.12, squeeze: 0,    brightness: 1 },
-  error:    { spin: 0.004, breath: 0.01, squeeze: 0,    brightness: 0.4 },
+  idle:     { spin: 0.04, breath: 0.05, squeeze: 0,    brightness: 0.85 },
+  thinking: { spin: 0.16, breath: 0.02, squeeze: 0.18, brightness: 1 },
+  acting:   { spin: 0.08, breath: 0.12, squeeze: 0,    brightness: 1 },
+  error:    { spin: 0.01, breath: 0.01, squeeze: 0,    brightness: 0.4 },
 };
+const FULL_TURN = Math.PI * 2;
+const MAX_STEP_MS = 50;   // after a pause (hidden tab), do not jump ahead
 
 function spherePoints() {
   return Array.from({ length: POINTS }, (_, index) => {
@@ -47,11 +50,16 @@ export function createOrb(canvas, { animate }) {
   let spin = 0;
   let time = 0;
   let frameId = 0;
+  let lastTime = 0;
 
-  function draw() {
-    for (const key of Object.keys(current)) current[key] += (target[key] - current[key]) * 0.08;
-    spin += current.spin;
-    time += 16;
+  /** @param {number} elapsedMs time since the last frame */
+  function draw(elapsedMs = 16) {
+    const step = Math.min(elapsedMs, MAX_STEP_MS);
+    // Same speed on 60 Hz and 120 Hz screens: everything scales with real time
+    const ease = 1 - Math.pow(0.92, step / 16);
+    for (const key of Object.keys(current)) current[key] += (target[key] - current[key]) * ease;
+    spin += current.spin * FULL_TURN * (step / 1000);
+    time += step;
 
     ctx.clearRect(0, 0, size, size);
     const center = size / 2;
@@ -72,13 +80,15 @@ export function createOrb(canvas, { animate }) {
     }
   }
 
-  function loop() {
-    draw();
+  function loop(now = performance.now()) {
+    draw(lastTime ? now - lastTime : 16);
+    lastTime = now;
     frameId = requestAnimationFrame(loop);
   }
 
   function onVisibility() {
     cancelAnimationFrame(frameId);
+    lastTime = 0;
     if (!document.hidden) loop();
   }
 

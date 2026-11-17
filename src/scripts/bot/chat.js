@@ -18,7 +18,7 @@ import { SECTION_EVENT } from "../nav-popup.js";
 const STORAGE_KEY = "askIsuru";
 const MAX_HISTORY_SENT = 12;
 const MAX_INPUT_CHARS = 600;
-const GREETING_DELAY_MS = 6000;
+const GREETING_DELAY_MS = 4000;
 const GREETING = "Hi! I'm Ask Isuru, an AI version of Isuru. Want me to show you around?";
 const OFFLINE_REPLY = "I couldn't reach my brain just now. Please try again in a moment.";
 
@@ -110,14 +110,15 @@ export function initAskIsuru() {
     input.focus({ preventScroll: true });
   }
 
-  function close() {
+  /** @param {{ returnFocus?: boolean }} [options] */
+  function close({ returnFocus = true } = {}) {
     session.isOpen = false;
     saveSession(session);
     panel.hidden = true;
     launcher.setAttribute("aria-expanded", "false");
     root.classList.remove("is-open");
     setState("closed");
-    launcher.focus({ preventScroll: true });
+    if (returnFocus) launcher.focus({ preventScroll: true });
   }
 
   // ── Talking to the server ──
@@ -166,7 +167,16 @@ export function initAskIsuru() {
   });
 
   launcher.addEventListener("click", () => (session.isOpen ? close() : open()));
-  closeButton.addEventListener("click", close);
+  closeButton.addEventListener("click", () => close());
+
+  // Tapping or clicking anywhere outside the chat minimizes it.
+  // Not while the bot is busy showing something, so its own scrolling
+  // and highlighting never close the chat by accident.
+  document.addEventListener("pointerdown", (event) => {
+    if (!session.isOpen || state === "thinking" || state === "acting") return;
+    if (root.contains(event.target)) return;
+    close({ returnFocus: false });
+  });
   bubble.querySelector("[data-bot-bubble-open]").addEventListener("click", open);
   bubble.querySelector("[data-bot-bubble-dismiss]").addEventListener("click", () => {
     bubble.hidden = true;
@@ -194,7 +204,8 @@ export function initAskIsuru() {
     }
   }
 
-  const hasLanding = Boolean(document.getElementById("landing"));
-  if (hasLanding) window.addEventListener("landing:done", appear, { once: true });
-  else appear();
+  const landingIsOver =
+    !document.getElementById("landing") || document.documentElement.dataset.landingDone === "true";
+  if (landingIsOver) appear();
+  else window.addEventListener("landing:done", appear, { once: true });
 }

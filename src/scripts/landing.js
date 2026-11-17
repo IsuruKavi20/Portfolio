@@ -23,7 +23,11 @@ const MIN_SWIPE_PX = 50;      // a deliberate swipe up
 const ENTER_KEYS = ["Enter", " ", "ArrowDown", "PageDown"];
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const announceDone = () => window.dispatchEvent(new Event(LANDING_DONE_EVENT));
+const announceDone = () => {
+  // A flag as well as the event: parts that start later can still tell the landing is over
+  document.documentElement.dataset.landingDone = "true";
+  window.dispatchEvent(new Event(LANDING_DONE_EVENT));
+};
 
 function rememberEntered() {
   try {

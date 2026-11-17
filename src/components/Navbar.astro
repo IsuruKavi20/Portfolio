@@ -29,7 +29,7 @@
       ['education', 'Education'],
       ['contact', 'Contact'],
     ].map(([id, label], index) => (
-      <li class="nav-pop-item" style={`--i: ${4 - index}`}>
+      <li class="nav-pop-item">
         <a href={`#${id}`} class="pop-link pressable" data-section={id}>
           <span class="pop-label">{label}</span>
           <span class="pop-number">{String(index + 1).padStart(2, '0')}</span>
@@ -253,8 +253,14 @@
   opacity: 1;
   transform: none;
   transition: opacity 0.4s ease, transform 0.5s var(--ease-out);
-  transition-delay: calc(var(--i) * 45ms);
+  transition-delay: 0s;
 }
+
+/* The item nearest the button rises first (no inline styles: CSP) */
+.nav-pop.is-open .nav-pop-item:nth-last-child(2) { transition-delay: 45ms; }
+.nav-pop.is-open .nav-pop-item:nth-last-child(3) { transition-delay: 90ms; }
+.nav-pop.is-open .nav-pop-item:nth-last-child(4) { transition-delay: 135ms; }
+.nav-pop.is-open .nav-pop-item:nth-last-child(5) { transition-delay: 180ms; }
 
 .nav-pop.is-open .nav-pop-list {
   pointer-events: auto;

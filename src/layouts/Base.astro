@@ -3,6 +3,8 @@ import '@fontsource-variable/inter';
 import '../styles/global.css';
 import Cursor from '../components/Cursor.astro';
 import AskIsuru from '../components/bot/AskIsuru.astro';
+import headInit from './head-init.js?raw';
+import { NOSCRIPT_CSS } from './inline-css.mjs';
 
 interface Props {
   title?: string;
@@ -26,29 +28,10 @@ const {
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <title>{title}</title>
 
-    <!-- Runs before first paint: decides whether animation is allowed and
-         whether this visitor has already passed the landing screen. -->
-    <script is:inline>
-      (function () {
-        var root = document.documentElement;
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          root.classList.add('motion');
-        }
-        try {
-          // Skip the landing only when arriving from another page of the site.
-          // A manual refresh shows it again.
-          var nav = performance.getEntriesByType('navigation')[0];
-          var isReload = nav && nav.type === 'reload';
-          if (sessionStorage.getItem('entered') && !isReload) root.classList.add('entered');
-          // Quality tier measured earlier in this session (see quality.js)
-          var tier = sessionStorage.getItem('qualityTierV2');
-          if (tier) root.dataset.tier = tier;
-        } catch (e) {
-          /* storage blocked: the landing screen simply shows again */
-        }
-      })();
-    </script>
-    <noscript><style>#landing { display: none; }</style></noscript>
+    <!-- Runs before first paint: animation allowed? already entered? quality tier?
+         Its exact text is fingerprinted in astro.config.mjs for the security policy. -->
+    <script is:inline set:html={headInit} />
+    <noscript><style is:inline set:html={NOSCRIPT_CSS} /></noscript>
   </head>
   <body>
     <a class="skip-link sr-only-focusable" href="#main">Skip to content</a>

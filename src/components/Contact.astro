@@ -22,7 +22,7 @@ import SectionHeader from './SectionHeader.astro';
     <div id="contact-body" class="contact-layout" data-reveal>
 
       <!-- Left: Contact form -->
-      <form id="contact-form" class="contact-form" novalidate>
+      <form id="contact-form" class="contact-form">
 
         <div class="form-row">
           <div class="form-group">
@@ -98,60 +98,29 @@ import SectionHeader from './SectionHeader.astro';
 
 </section>
 
-<!-- EmailJS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-// ── EmailJS Setup ──────────────────────────────
-// 1. Sign up free at https://emailjs.com
-// 2. Create an Email Service (Gmail, Outlook, etc.)
-// 3. Create an Email Template with variables:
-//    {{from_name}}, {{from_email}}, {{subject}}, {{message}}
-// 4. Replace the three placeholders below with your IDs:
+// ── Contact form (for now) ─────────────────────
+// Until the server email service is chosen and set up, sending opens the
+// visitor's own email app with the message filled in. No third-party
+// script and no key in the browser.
+const TO = 'isurukpremasiri2001@gmail.com';
+const MAX_FIELD = 2000;
 
-const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // Account → API Keys
-const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // Email Services → Service ID
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // Email Templates → Template ID
+const form = document.getElementById('contact-form') as HTMLFormElement | null;
+const status = document.getElementById('form-status');
 
-emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+form?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (!form || !form.reportValidity()) return;
 
-const form       = document.getElementById("contact-form");
-const submitBtn  = document.getElementById("contact-submit");
-const submitText = document.getElementById("submit-text");
-const submitIcon = document.getElementById("submit-icon");
-const status     = document.getElementById("form-status");
+  const field = (name: string) => String(new FormData(form).get(name) ?? '').trim().slice(0, MAX_FIELD);
+  const subject = field('subject') || 'Hello from your portfolio';
+  const body = `${field('message')}\n\n— ${field('from_name')} (${field('from_email')})`;
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  // Loading state
-  submitBtn.disabled = true;
-  submitText.textContent = "Sending…";
-  submitIcon.style.display = "none";
-  status.textContent = "";
-  status.className = "form-status";
-
-  try {
-    await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form);
-
-    submitText.textContent = "Sent!";
-    status.textContent = "✓ Message delivered. I'll get back to you soon.";
-    status.classList.add("status-success");
-    form.reset();
-
-    setTimeout(() => {
-      submitText.textContent = "Send Message";
-      submitIcon.style.display = "";
-      submitBtn.disabled = false;
-      status.textContent = "";
-      status.className = "form-status";
-    }, 4000);
-
-  } catch (err) {
-    submitText.textContent = "Send Message";
-    submitIcon.style.display = "";
-    submitBtn.disabled = false;
-    status.textContent = "✗ Something went wrong. Please email me directly.";
-    status.classList.add("status-error");
+  window.location.href = `mailto:${TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  if (status) {
+    status.textContent = 'Your email app should open with the message ready to send.';
+    status.className = 'form-status status-success';
   }
 });
 </script>
