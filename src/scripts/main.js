@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { createParticleField } from "./particles.js";
 import { initSmoothScroll } from "./scroll.js";
-import { initQuality, getTier, QUALITY_EVENT, TIER_HIGH, TIER_LOW } from "./quality.js";
+import { initQuality, getTier, getLandingTier, TIER_HIGH, TIER_LOW } from "./quality.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -132,7 +132,7 @@ initSmoothScroll();
   function showCanvas() {
     if (!canvas) return;
     canvas.classList.add("is-on");
-    field = createParticleField(canvas, { animate: motionAllowed, quality: getTier() });
+    field = createParticleField(canvas, { animate: motionAllowed, quality: getLandingTier() });
   }
 
   function showSpline() {
@@ -145,26 +145,13 @@ initSmoothScroll();
     scene.removeAttribute("src");   // stops the 3D scene and frees the graphics card
   }
 
-  // The 3D scene is the heaviest thing on the site: struggling devices skip it
-  let isUsingSpline = Boolean(isDesktop && scene && getTier() !== TIER_LOW);
+  // The 3D scene is the heaviest thing on the site: low-tier devices skip it.
+  // The landing judges by browser hints only, never by measured frame rate.
+  const isUsingSpline = Boolean(isDesktop && scene && getLandingTier() !== TIER_LOW);
   if (isUsingSpline) showSpline();
   else showCanvas();
 
   if (HAS_MOUSE) enterBtn.querySelector(".enter-label").textContent = "Click to Enter";
-
-  // The frame-rate measurement finishes while the landing is open.
-  // If the device turned out slower than guessed, lighten the landing live.
-  function onQualityChange(event) {
-    const { tier } = event.detail;
-    if (isUsingSpline && tier === TIER_LOW) {
-      isUsingSpline = false;
-      hideSpline();
-      showCanvas();
-    } else {
-      field?.setQuality(tier);
-    }
-  }
-  window.addEventListener(QUALITY_EVENT, onQualityChange);
 
   setTimeout(() => content.classList.add("is-in"), CONTENT_IN_MS);
 
@@ -181,7 +168,6 @@ initSmoothScroll();
     }
     await wait(motionAllowed ? FADE_MS : 0);
 
-    window.removeEventListener(QUALITY_EVENT, onQualityChange);
     field?.stop();
     if (isUsingSpline) hideSpline();
     landing.style.display = "none";

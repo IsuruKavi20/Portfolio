@@ -40,7 +40,7 @@ const {
           var isReload = nav && nav.type === 'reload';
           if (sessionStorage.getItem('entered') && !isReload) root.classList.add('entered');
           // Quality tier measured earlier in this session (see quality.js)
-          var tier = sessionStorage.getItem('qualityTier');
+          var tier = sessionStorage.getItem('qualityTierV2');
           if (tier) root.dataset.tier = tier;
         } catch (e) {
           /* storage blocked: the landing screen simply shows again */

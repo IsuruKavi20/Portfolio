@@ -57,7 +57,7 @@ function createParticle(width, height) {
  * @param {HTMLCanvasElement} canvas
  * @param {{ animate?: boolean, quality?: "low" | "mid" | "high" }} [options]
  *   animate=false draws one still frame; quality sets how rich the field is
- * @returns {{ warp: () => Promise<void>, stop: () => void, setQuality: (quality: string) => void }}
+ * @returns {{ warp: () => Promise<void>, stop: () => void }}
  */
 export function createParticleField(canvas, { animate = true, quality = "high" } = {}) {
   const ctx = canvas.getContext('2d');
@@ -66,8 +66,8 @@ export function createParticleField(canvas, { animate = true, quality = "high" }
   const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 };
 
   // "low" always means a still frame, whatever was asked for
-  let isAnimating = animate && quality !== "low";
-  let isRich = quality === "high";   // rich = full particle count + glow
+  const isAnimating = animate && quality !== "low";
+  const isRich = quality === "high";   // rich = full particle count + glow
   let width = 0;
   let height = 0;
   let particles = [];
@@ -250,15 +250,5 @@ export function createParticleField(canvas, { animate = true, quality = "high" }
     });
   }
 
-  /** Switches quality while running, when the device turns out to be slower than guessed. */
-  function setQuality(nextQuality) {
-    isRich = nextQuality === "high";
-    if (nextQuality === "low") {
-      isAnimating = false;
-      cancelAnimationFrame(frameId);
-    }
-    resize();   // rebuilds the particles for the new quality (and draws the still frame)
-  }
-
-  return { warp, stop, setQuality };
+  return { warp, stop };
 }

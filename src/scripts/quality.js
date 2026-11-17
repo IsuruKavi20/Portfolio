@@ -11,6 +11,8 @@
 //    2. A real measurement: count frames for a moment. If the device
 //       cannot keep up, step down. Hints are missing on iPhone and
 //       Firefox, so the measurement is what makes this reliable.
+//       It runs only after the landing screen closes, and it only affects
+//       the rest of the site. The landing uses getLandingTier() instead.
 //
 //  The tier is written to <html data-tier="..."> so CSS can react,
 //  and remembered for the browser session so we measure only once.
@@ -23,7 +25,7 @@ export const TIER_MID = "mid";
 export const TIER_HIGH = "high";
 
 const TIERS_LOW_TO_HIGH = [TIER_LOW, TIER_MID, TIER_HIGH];
-const STORAGE_KEY = "qualityTier";
+const STORAGE_KEY = "qualityTierV2";
 export const QUALITY_EVENT = "quality:change";
 
 const LOW_MEMORY_GB = 2;
@@ -102,6 +104,23 @@ function storeTier(tier) {
   }
 }
 
+function readForcedTier() {
+  const forced = new URLSearchParams(window.location.search).get(OVERRIDE_PARAM);
+  return isKnownTier(forced) ? forced : null;
+}
+
+/**
+ * Tier for the landing screen. It ignores the frame-rate measurement on
+ * purpose: frame rate in a browser swings with battery saving, other tabs
+ * and background work, and the orb is the first impression of the site.
+ * Only what the visitor asked for (reduced motion, data saver) or clearly
+ * weak hardware (little memory) removes it.
+ * @returns {"low" | "mid" | "high"}
+ */
+export function getLandingTier() {
+  return readForcedTier() ?? pickInitialTier(readSignals());
+}
+
 /** @returns {"low" | "mid" | "high"} the tier in use right now */
 export function getTier() {
   const current = document.documentElement.dataset.tier;
@@ -154,9 +173,8 @@ function measureFrameRate() {
   });
 }
 
-function whenPageLoaded() {
-  if (document.readyState === "complete") return Promise.resolve();
-  return new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+function whenSiteEntered() {
+  return new Promise((resolve) => window.addEventListener("landing:done", resolve, { once: true }));
 }
 
 /**
@@ -165,8 +183,8 @@ function whenPageLoaded() {
  */
 export async function initQuality() {
   // Testing aid: ?tier=low in the address forces a tier for this session
-  const forced = new URLSearchParams(window.location.search).get(OVERRIDE_PARAM);
-  if (isKnownTier(forced)) {
+  const forced = readForcedTier();
+  if (forced) {
     applyTier(forced);
     storeTier(forced);
     return;
@@ -188,7 +206,7 @@ export async function initQuality() {
     return;
   }
 
-  await whenPageLoaded();
+  await whenSiteEntered();
   const framesPerSecond = await measureFrameRate();
   if (framesPerSecond === null) return;   // tab was hidden: try again on the next page
 
