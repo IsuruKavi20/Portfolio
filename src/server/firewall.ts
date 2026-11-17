@@ -26,9 +26,13 @@ export async function isOverFirewallLimit(rateLimitId: string, request: Request)
   // The firewall only exists on Vercel; locally there is nothing to ask
   if (!import.meta.env.PROD) return false;
   try {
-    const { rateLimited } = await checkRateLimit(rateLimitId, { request, timeout: CHECK_TIMEOUT_MS });
+    const { rateLimited, error } = await checkRateLimit(rateLimitId, { request, timeout: CHECK_TIMEOUT_MS });
+    // Diagnostic: shows in Vercel → Logs if the firewall cannot find the rule.
+    // Only the rule name and Vercel's short answer are logged, never request data.
+    if (error) console.warn('[firewall] check for', rateLimitId, 'answered:', error);
     return rateLimited;
-  } catch {
+  } catch (failure) {
+    console.warn('[firewall] check for', rateLimitId, 'failed:', failure instanceof Error ? failure.name : 'unknown');
     return false;
   }
 }
