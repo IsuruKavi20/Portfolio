@@ -10,6 +10,7 @@
 
 const MAX_PIXEL_RATIO = 2;
 const AREA_PER_PARTICLE = 5200;   // one particle per this many px²
+const REDUCED_DENSITY = 0.6;      // share of particles kept below the high tier
 const MIN_PARTICLES = 60;
 const MAX_PARTICLES = 130;
 const GLOW_SHARE = 0.1;           // share of particles that get a soft halo
@@ -54,15 +55,19 @@ function createParticle(width, height) {
 /**
  * Starts a particle field on the given canvas.
  * @param {HTMLCanvasElement} canvas
- * @param {{ animate?: boolean }} [options] animate=false draws one still frame
- * @returns {{ warp: () => Promise<void>, stop: () => void }}
+ * @param {{ animate?: boolean, quality?: "low" | "mid" | "high" }} [options]
+ *   animate=false draws one still frame; quality sets how rich the field is
+ * @returns {{ warp: () => Promise<void>, stop: () => void, setQuality: (quality: string) => void }}
  */
-export function createParticleField(canvas, { animate = true } = {}) {
+export function createParticleField(canvas, { animate = true, quality = "high" } = {}) {
   const ctx = canvas.getContext('2d');
   const glowSprite = createGlowSprite();
   const pointer = { x: 0, y: 0, active: false };
   const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 };
 
+  // "low" always means a still frame, whatever was asked for
+  let isAnimating = animate && quality !== "low";
+  let isRich = quality === "high";   // rich = full particle count + glow
   let width = 0;
   let height = 0;
   let particles = [];
@@ -80,9 +85,10 @@ export function createParticleField(canvas, { animate = true } = {}) {
     canvas.height = Math.round(height * ratio);
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-    const count = clamp(Math.round((width * height) / AREA_PER_PARTICLE), MIN_PARTICLES, MAX_PARTICLES);
+    const fullCount = clamp(Math.round((width * height) / AREA_PER_PARTICLE), MIN_PARTICLES, MAX_PARTICLES);
+    const count = Math.round(fullCount * (isRich ? 1 : REDUCED_DENSITY));
     particles = Array.from({ length: count }, () => createParticle(width, height));
-    if (!animate) draw(0);
+    if (!isAnimating) draw(0);
   }
 
   // A smooth direction for every point in space that changes slowly over time.
@@ -146,7 +152,7 @@ export function createParticleField(canvas, { animate = true } = {}) {
         continue;
       }
 
-      if (p.hasGlow) {
+      if (isRich && p.hasGlow) {
         const glowSize = p.radius * 14;
         ctx.globalAlpha = p.alpha;
         ctx.drawImage(glowSprite, baseX - glowSize / 2, baseY - glowSize / 2, glowSize, glowSize);
@@ -205,7 +211,7 @@ export function createParticleField(canvas, { animate = true } = {}) {
 
   function onVisibility() {
     if (document.hidden) cancelAnimationFrame(frameId);
-    else if (animate) start();
+    else if (isAnimating) start();
   }
 
   // iOS needs a permission popup for tilt; we skip it there instead of asking.
@@ -214,7 +220,7 @@ export function createParticleField(canvas, { animate = true } = {}) {
   window.addEventListener('resize', resize);
   resize();
 
-  if (animate) {
+  if (isAnimating) {
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerdown', onPointerMove, { passive: true });
     window.addEventListener('pointerup', onPointerEnd, { passive: true });
@@ -237,12 +243,22 @@ export function createParticleField(canvas, { animate = true } = {}) {
 
   /** Plays the fly-through exit and resolves when it finishes. */
   function warp() {
-    if (!animate) return Promise.resolve();
+    if (!isAnimating) return Promise.resolve();
     return new Promise((resolve) => {
       resolveWarp = resolve;
       warpStart = performance.now();
     });
   }
 
-  return { warp, stop };
+  /** Switches quality while running, when the device turns out to be slower than guessed. */
+  function setQuality(nextQuality) {
+    isRich = nextQuality === "high";
+    if (nextQuality === "low") {
+      isAnimating = false;
+      cancelAnimationFrame(frameId);
+    }
+    resize();   // rebuilds the particles for the new quality (and draws the still frame)
+  }
+
+  return { warp, stop, setQuality };
 }

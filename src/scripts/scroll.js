@@ -7,10 +7,14 @@ import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { getTier, TIER_LOW } from "./quality.js";
 
 const MS_PER_SECOND = 1000;
 
 function startLenis() {
+  // A struggling device scrolls best with the browser's own scrolling
+  if (getTier() === TIER_LOW) return;
+
   // anchors: nav links such as #about glide to their section
   const lenis = new Lenis({ anchors: true });
 

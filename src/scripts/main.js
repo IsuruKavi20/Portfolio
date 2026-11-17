@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { createParticleField } from "./particles.js";
 import { initSmoothScroll } from "./scroll.js";
+import { initQuality, getTier, QUALITY_EVENT, TIER_HIGH, TIER_LOW } from "./quality.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,11 +25,14 @@ function createMouseParallax(element, { strength, duration }) {
   const moveX = gsap.quickTo(element, "x", { duration, ease: "power2.out" });
   const moveY = gsap.quickTo(element, "y", { duration, ease: "power2.out" });
   return (event) => {
+    if (getTier() !== TIER_HIGH) return;   // decorative: only on capable devices
     moveX((window.innerWidth  / 2 - event.clientX) / strength);
     moveY((window.innerHeight / 2 - event.clientY) / strength);
   };
 }
 
+// Sets the quality tier now (first guess) and refines it in the background
+initQuality();
 initSmoothScroll();
 
 // ─────────────────────────────────────────────
@@ -125,14 +129,42 @@ initSmoothScroll();
 
   document.body.classList.add("is-locked");
 
-  if (isDesktop && scene) {
+  function showCanvas() {
+    if (!canvas) return;
+    canvas.classList.add("is-on");
+    field = createParticleField(canvas, { animate: motionAllowed, quality: getTier() });
+  }
+
+  function showSpline() {
     scene.src = scene.dataset.src;
     scene.classList.add("is-on");
-    enterBtn.querySelector(".enter-label").textContent = "Click to Enter";
-  } else if (canvas) {
-    canvas.classList.add("is-on");
-    field = createParticleField(canvas, { animate: motionAllowed });
   }
+
+  function hideSpline() {
+    scene.classList.remove("is-on");
+    scene.removeAttribute("src");   // stops the 3D scene and frees the graphics card
+  }
+
+  // The 3D scene is the heaviest thing on the site: struggling devices skip it
+  let isUsingSpline = Boolean(isDesktop && scene && getTier() !== TIER_LOW);
+  if (isUsingSpline) showSpline();
+  else showCanvas();
+
+  if (HAS_MOUSE) enterBtn.querySelector(".enter-label").textContent = "Click to Enter";
+
+  // The frame-rate measurement finishes while the landing is open.
+  // If the device turned out slower than guessed, lighten the landing live.
+  function onQualityChange(event) {
+    const { tier } = event.detail;
+    if (isUsingSpline && tier === TIER_LOW) {
+      isUsingSpline = false;
+      hideSpline();
+      showCanvas();
+    } else {
+      field?.setQuality(tier);
+    }
+  }
+  window.addEventListener(QUALITY_EVENT, onQualityChange);
 
   setTimeout(() => content.classList.add("is-in"), CONTENT_IN_MS);
 
@@ -149,7 +181,9 @@ initSmoothScroll();
     }
     await wait(motionAllowed ? FADE_MS : 0);
 
+    window.removeEventListener(QUALITY_EVENT, onQualityChange);
     field?.stop();
+    if (isUsingSpline) hideSpline();
     landing.style.display = "none";
     document.body.classList.remove("is-locked");
     try {
