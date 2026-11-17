@@ -112,6 +112,10 @@ initSmoothScroll();
   const WARP_LEAD_MS   = 350;   // particles rush first, then the fade starts
   const WARP_TIMEOUT   = 1400;  // never wait on the animation longer than this
   const CONTENT_IN_MS  = 300;
+  const SCENE_SETTLE_MS = 400;  // the 3D scene needs a moment to draw after loading
+  const MIN_WHEEL      = 30;    // a deliberate scroll, not a tiny trackpad touch
+  const MIN_SWIPE_PX   = 50;    // a deliberate swipe up
+  const ENTER_KEYS     = ["Enter", " ", "ArrowDown", "PageDown"];
 
   const announceDone = () => window.dispatchEvent(new Event("landing:done"));
 
@@ -136,6 +140,10 @@ initSmoothScroll();
   }
 
   function showSpline() {
+    // The orb fades in once it has loaded, instead of popping in half-drawn
+    scene.addEventListener("load", () => {
+      setTimeout(() => scene.classList.add("is-ready"), SCENE_SETTLE_MS);
+    }, { once: true });
     scene.src = scene.dataset.src;
     scene.classList.add("is-on");
   }
@@ -155,8 +163,13 @@ initSmoothScroll();
 
   setTimeout(() => content.classList.add("is-in"), CONTENT_IN_MS);
 
-  enterBtn.addEventListener("click", async () => {
+  let isEntering = false;
+
+  async function enterSite() {
+    if (isEntering) return;   // several ways to enter can fire at once
+    isEntering = true;
     enterBtn.disabled = true;
+    removeEnterGestures();
 
     if (field && motionAllowed) {
       const warpDone = Promise.race([field.warp(), wait(WARP_TIMEOUT)]);
@@ -178,7 +191,44 @@ initSmoothScroll();
       // storage blocked: the landing screen simply shows again next time
     }
     announceDone();
-  }, { once: true });
+  }
+
+  // ── Ways to enter: the button, a scroll, a swipe up, or a key ──
+  // (Over the desktop orb, scroll does not reach the page: the orb's frame
+  //  keeps the wheel for itself. The button and keys always work.)
+  function onWheel(event) {
+    if (event.deltaY > MIN_WHEEL) enterSite();
+  }
+
+  let touchStartY = null;
+  function onTouchStart(event) {
+    touchStartY = event.touches[0].clientY;
+  }
+  function onTouchEnd(event) {
+    if (touchStartY === null) return;
+    const swipedUp = touchStartY - event.changedTouches[0].clientY;
+    touchStartY = null;
+    if (swipedUp > MIN_SWIPE_PX) enterSite();
+  }
+
+  function onKey(event) {
+    if (!ENTER_KEYS.includes(event.key)) return;
+    event.preventDefault();   // stop Space and arrows from scrolling the page
+    enterSite();
+  }
+
+  function removeEnterGestures() {
+    window.removeEventListener("wheel", onWheel);
+    window.removeEventListener("touchstart", onTouchStart);
+    window.removeEventListener("touchend", onTouchEnd);
+    window.removeEventListener("keydown", onKey);
+  }
+
+  enterBtn.addEventListener("click", enterSite);
+  window.addEventListener("wheel", onWheel, { passive: true });
+  window.addEventListener("touchstart", onTouchStart, { passive: true });
+  window.addEventListener("touchend", onTouchEnd, { passive: true });
+  window.addEventListener("keydown", onKey);
 })();
 
 

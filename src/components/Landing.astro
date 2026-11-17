@@ -68,6 +68,16 @@ const SPLINE_SCENE = 'https://my.spline.design/particles-GyNz08Gkdf1tLRz7jXs3APW
     display: block;
   }
 
+  /* The orb frame fades in once it has loaded (main.js adds .is-ready) */
+  iframe.landing-layer {
+    opacity: 0;
+    transition: opacity 1.4s ease;
+  }
+
+  iframe.landing-layer.is-ready {
+    opacity: 1;
+  }
+
   /* Desktop: the same even dimming the Spline scene always had */
   .landing-atmosphere {
     position: absolute;
