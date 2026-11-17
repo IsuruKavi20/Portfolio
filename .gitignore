@@ -29,3 +29,5 @@ plan/
 
 # Vercel adapter build output
 .vercel/
+
+.env

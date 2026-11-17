@@ -99,7 +99,6 @@ export function initAskIsuru() {
   // ── Open / close ──
   function open() {
     session.isOpen = true;
-    session.greeted = true;
     saveSession(session);
     bubble.hidden = true;
     panel.hidden = false;
@@ -123,6 +122,8 @@ export function initAskIsuru() {
 
   // ── Talking to the server ──
   async function send(text) {
+    // Once the visitor has talked to the bot, it no longer needs to say hello
+    session.greeted = true;
     addBubble("visitor", text);
     remember("visitor", text);
     setState("thinking");
@@ -198,8 +199,12 @@ export function initAskIsuru() {
     session.messages.forEach(({ role, text }) => addBubble(role, text));
     if (session.isOpen) open();
     else if (!session.greeted) {
+      // Says hello on each page until the visitor chats or dismisses it
       setTimeout(() => {
-        if (!session.isOpen && !session.greeted) bubble.hidden = false;
+        if (session.isOpen || session.greeted) return;
+        bubble.hidden = false;
+        setMood("acting");                      // the orb perks up as it speaks
+        setTimeout(() => state === "closed" && setMood("idle"), 2500);
       }, GREETING_DELAY_MS);
     }
   }

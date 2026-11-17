@@ -1,5 +1,5 @@
 // describe / test / expect are provided by Vitest (globals: true in vitest.config.js)
-import { buildToolDeclarations, toGeminiContents, toRawActions } from './gemini-provider';
+import { buildToolDeclarations, toGeminiContents, toRawActions, toToolResults } from './gemini-provider';
 import { validateActions } from '../lib/bot-actions';
 
 describe('buildToolDeclarations', () => {
@@ -38,5 +38,13 @@ describe('toRawActions', () => {
 
   test('returns nothing when there are no calls', () => {
     expect(toRawActions(undefined)).toEqual([]);
+  });
+});
+
+describe('toToolResults', () => {
+  test('reports every requested action as done, matched by id and name', () => {
+    const content = toToolResults([{ id: 'a1', name: 'scroll_to', args: { section: 'skills' } }]);
+    expect(content.role).toBe('user');
+    expect(content.parts?.[0].functionResponse).toEqual({ id: 'a1', name: 'scroll_to', response: { result: 'done on the page' } });
   });
 });

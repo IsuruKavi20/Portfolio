@@ -112,7 +112,13 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     });
   } catch (error) {
     // Server log only, and only the error type: never the request or any key
-    console.error('[api/chat] reply failed:', error instanceof Error ? error.name : 'unknown');
-    return reply(502, { error: 'My thoughts got tangled. Please try again.' });
+    const status = (error as { status?: number } | null)?.status;
+    console.error('[api/chat] reply failed:', error instanceof Error ? error.name : 'unknown', status ?? '');
+    const busy = status === 429 || status === 503;
+    return reply(502, {
+      error: busy
+        ? 'Lots of people are talking to me right now. Please try again in a minute.'
+        : 'My thoughts got tangled. Please try again.',
+    });
   }
 };

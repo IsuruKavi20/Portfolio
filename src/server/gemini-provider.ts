@@ -77,28 +77,72 @@ export function toRawActions(calls: FunctionCall[] | undefined): unknown[] {
   return (calls ?? []).map((call) => ({ ...(call.args ?? {}), type: call.name }));
 }
 
+/** Tells Gemini its actions were carried out, so it can now write its sentence. */
+export function toToolResults(calls: FunctionCall[]): Content {
+  return {
+    role: 'user',
+    parts: calls.map((call) => ({
+      functionResponse: { id: call.id, name: call.name, response: { result: 'done on the page' } },
+    })),
+  };
+}
+
+const RETRY_STATUSES = new Set([429, 500, 503]);
+const RETRY_DELAY_MS = 900;
+
+function isRetryable(error: unknown): boolean {
+  const status = (error as { status?: number } | null)?.status;
+  return typeof status === 'number' && RETRY_STATUSES.has(status);
+}
+
 export function createGeminiProvider({ apiKey, model, knowledge }: { apiKey: string; model?: string; knowledge: string }): AiProvider {
   const client = new GoogleGenAI({ apiKey });
   const systemInstruction = buildSystemInstruction(knowledge);
 
-  return {
-    async generateReply({ messages, context, projectIds }): Promise<AiReply> {
-      const response = await client.models.generateContent({
+  /** One request to Gemini; tried once more if Google is briefly busy. */
+  async function ask(contents: Content[], tools: FunctionDeclaration[], mode: FunctionCallingConfigMode) {
+    const request = () =>
+      client.models.generateContent({
         model: model || DEFAULT_MODEL,
-        contents: toGeminiContents(messages, describeContext(context)),
+        contents,
         config: {
           systemInstruction,
           maxOutputTokens: MAX_OUTPUT_TOKENS,
           temperature: 0.6,
-          tools: [{ functionDeclarations: buildToolDeclarations(projectIds) }],
-          toolConfig: { functionCallingConfig: { mode: FunctionCallingConfigMode.AUTO } },
+          tools: [{ functionDeclarations: tools }],
+          toolConfig: { functionCallingConfig: { mode } },
           abortSignal: AbortSignal.timeout(TIMEOUT_MS),
         },
       });
+    try {
+      return await request();
+    } catch (error) {
+      if (!isRetryable(error)) throw error;
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+      return request();
+    }
+  }
 
-      const actions = toRawActions(response.functionCalls);
-      const text = response.text?.trim() || (actions.length ? FALLBACK_TEXT : '');
-      return { text, actions };
+  return {
+    async generateReply({ messages, context, projectIds }): Promise<AiReply> {
+      const tools = buildToolDeclarations(projectIds);
+      const contents = toGeminiContents(messages, describeContext(context));
+
+      // Round 1: Gemini answers, and may ask for actions
+      const first = await ask(contents, tools, FunctionCallingConfigMode.AUTO);
+      const calls = first.functionCalls ?? [];
+      const actions = toRawActions(calls);
+      let text = first.text?.trim() ?? '';
+
+      // Round 2 (only when it acted without words): report the actions as
+      // done and let it write its sentence. Tools are switched off here.
+      const modelTurn = first.candidates?.[0]?.content;
+      if (!text && calls.length && modelTurn) {
+        const second = await ask([...contents, modelTurn, toToolResults(calls)], tools, FunctionCallingConfigMode.NONE);
+        text = second.text?.trim() ?? '';
+      }
+
+      return { text: text || (actions.length ? FALLBACK_TEXT : ''), actions };
     },
   };
 }
