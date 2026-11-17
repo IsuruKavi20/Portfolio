@@ -88,9 +88,14 @@
 
 /* ── Header ── */
 .skills-line {
-  width: 0px;
+  width: 48px;
   height: 1px;
   background: rgba(255, 255, 255, 0.25);
+  transform-origin: left;
+}
+
+:global(.motion) .skills-line {
+  transform: scaleX(0);
 }
 
 /* Same font size as original — compact, not giant */

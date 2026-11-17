@@ -1,7 +1,7 @@
 ---
 ---
 
-<section id="contact" class="relative bg-black text-white py-40 overflow-hidden">
+<section id="contact" data-pause-offscreen class="relative bg-black text-white py-40 overflow-hidden">
 
   <div class="max-w-7xl mx-auto px-6 md:px-16">
 
@@ -168,9 +168,14 @@ form.addEventListener("submit", async (e) => {
 
 /* ── Header ── */
 .contact-line {
-  width: 0px;
+  width: 48px;
   height: 1px;
   background: rgba(255, 255, 255, 0.25);
+  transform-origin: left;
+}
+
+:global(.motion) .contact-line {
+  transform: scaleX(0);
 }
 
 .contact-title {

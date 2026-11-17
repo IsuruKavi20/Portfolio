@@ -47,10 +47,14 @@ import ProjectCard from "./ProjectCard.astro";
 <style>
 
 .proj-line {
-  width: 0px;
+  width: 48px;
   height: 1px;
   background: rgba(255, 255, 255, 0.25);
-  transition: width 0.8s ease;
+  transform-origin: left;
+}
+
+:global(.motion) .proj-line {
+  transform: scaleX(0);
 }
 
 .proj-title {

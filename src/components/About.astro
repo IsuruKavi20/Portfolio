@@ -64,7 +64,8 @@ import aboutPhoto from '../assets/images/about.png';
   top: 50%;
   width: 38%;
   object-fit: cover;
-  filter: grayscale(100%) brightness(0.75);
+  /* The photo file is already black and white, so no grayscale filter is needed */
+  filter: brightness(0.75);
   z-index: 1;
 
   /* Fade edges so it blends into black */

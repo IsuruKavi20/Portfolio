@@ -76,9 +76,14 @@
 
 /* ── Header ── */
 .edu-line {
-  width: 0px;
+  width: 48px;
   height: 1px;
   background: rgba(255, 255, 255, 0.25);
+  transform-origin: left;
+}
+
+:global(.motion) .edu-line {
+  transform: scaleX(0);
 }
 
 .edu-title {

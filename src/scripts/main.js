@@ -10,6 +10,25 @@ import { initSmoothScroll } from "./scroll.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const HAS_MOUSE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+/**
+ * Moves an element a little, opposite to the mouse, for a depth effect.
+ * quickTo builds one reusable animation per axis, so a mouse move only
+ * updates its target instead of creating a new animation every time.
+ * @param {Element} element
+ * @param {{ strength: number, duration: number }} options strength: larger = subtler
+ * @returns {(event: MouseEvent) => void} handler for a mousemove listener
+ */
+function createMouseParallax(element, { strength, duration }) {
+  const moveX = gsap.quickTo(element, "x", { duration, ease: "power2.out" });
+  const moveY = gsap.quickTo(element, "y", { duration, ease: "power2.out" });
+  return (event) => {
+    moveX((window.innerWidth  / 2 - event.clientX) / strength);
+    moveY((window.innerHeight / 2 - event.clientY) / strength);
+  };
+}
+
 initSmoothScroll();
 
 // ─────────────────────────────────────────────
@@ -18,26 +37,39 @@ initSmoothScroll();
 (function initCursor() {
   const dot  = document.getElementById("cursorDot");
   const ring = document.getElementById("cursorRing");
-  const hasMouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (!dot || !ring || !HAS_MOUSE) return;
 
-  if (!dot || !ring || !hasMouse) return;
-
-  const IDLE_HIDE_MS = 1200;
-  const RING_FOLLOW  = 0.15;
-  const INTERACTIVE  = "a, button, input, textarea, [data-cursor]";
+  const IDLE_HIDE_MS   = 1200;
+  const RING_FOLLOW_S  = 0.45;   // how long the ring takes to catch up
+  const HOVER_SCALE    = 1.5;
+  const INTERACTIVE    = "a, button, input, textarea, [data-cursor]";
 
   document.documentElement.classList.add("has-cursor");
 
-  let mouseX = 0, mouseY = 0;
-  let ringX  = 0, ringY  = 0;
+  // Positions use transform (x / y) instead of left / top: the graphics
+  // card moves the element and the browser does not re-lay-out the page.
+  gsap.set([dot, ring], { xPercent: -50, yPercent: -50 });
+  const dotX  = gsap.quickSetter(dot, "x", "px");
+  const dotY  = gsap.quickSetter(dot, "y", "px");
+  const ringX = gsap.quickTo(ring, "x", { duration: RING_FOLLOW_S, ease: "power3" });
+  const ringY = gsap.quickTo(ring, "y", { duration: RING_FOLLOW_S, ease: "power3" });
+
+  let hasMoved = false;
+  let isHovering = false;
   let idleTimer;
 
   document.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+    dotX(e.clientX);
+    dotY(e.clientY);
 
-    dot.style.left    = mouseX + "px";
-    dot.style.top     = mouseY + "px";
+    if (!hasMoved) {
+      // First move: place the ring under the mouse so it does not fly in from the corner
+      gsap.set(ring, { x: e.clientX, y: e.clientY });
+      hasMoved = true;
+    }
+    ringX(e.clientX);
+    ringY(e.clientY);
+
     dot.style.opacity  = "1";
     ring.style.opacity = "1";
 
@@ -48,18 +80,13 @@ initSmoothScroll();
     }, IDLE_HIDE_MS);
   });
 
-  function animateRing() {
-    ringX += (mouseX - ringX) * RING_FOLLOW;
-    ringY += (mouseY - ringY) * RING_FOLLOW;
-    ring.style.left = ringX + "px";
-    ring.style.top  = ringY + "px";
-    requestAnimationFrame(animateRing);
-  }
-  animateRing();
-
   // One listener on the document also covers elements added later
   document.addEventListener("mouseover", (e) => {
-    ring.classList.toggle("cursor-hover", Boolean(e.target.closest?.(INTERACTIVE)));
+    const hoveringNow = Boolean(e.target.closest?.(INTERACTIVE));
+    if (hoveringNow === isHovering) return;
+    isHovering = hoveringNow;
+    ring.classList.toggle("cursor-hover", isHovering);
+    gsap.to(ring, { scale: isHovering ? HOVER_SCALE : 1, duration: 0.25, ease: "power2.out", overwrite: "auto" });
   });
 })();
 
@@ -139,22 +166,60 @@ initSmoothScroll();
 // 3. NAVBAR SCROLLSPY  (from Navbar.astro)
 // ─────────────────────────────────────────────
 (function initNavbar() {
-  const sections = ["about", "skills", "projects", "education", "contact"];
+  const links = [...document.querySelectorAll(".nav-link")];
+  const sections = links
+    .map((link) => document.getElementById(link.dataset.section))
+    .filter(Boolean);
 
-  function updateActiveLink() {
-    const scrollY = window.scrollY + window.innerHeight * 0.4;
-    let current = "";
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el && el.offsetTop <= scrollY) current = id;
-    });
-    document.querySelectorAll(".nav-link").forEach((link) => {
-      link.classList.toggle("nav-active", link.dataset.section === current);
+  if (!sections.length) return;
+
+  // An invisible line 40% down the screen. Whichever section is crossing
+  // that line is the one the visitor is reading.
+  const READING_LINE = "-40% 0px -60% 0px";
+  const crossingLine = new Set();
+
+  function setActive(sectionId) {
+    links.forEach((link) => {
+      const isActive = link.dataset.section === sectionId;
+      link.classList.toggle("nav-active", isActive);
+      if (isActive) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
     });
   }
 
-  window.addEventListener("scroll", updateActiveLink, { passive: true });
-  updateActiveLink();
+  // The browser calls this only when a section starts or stops crossing
+  // the line, instead of us checking positions on every scroll event.
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) crossingLine.add(entry.target.id);
+      else crossingLine.delete(entry.target.id);
+    });
+    const current = sections.filter((section) => crossingLine.has(section.id)).pop();
+    setActive(current ? current.id : "");
+  }, { rootMargin: READING_LINE });
+
+  sections.forEach((section) => observer.observe(section));
+})();
+
+
+// ─────────────────────────────────────────────
+// 3b. PAUSE OFF-SCREEN ANIMATIONS
+// ─────────────────────────────────────────────
+// Looping CSS animations (the scroll drip, the availability dot) keep the
+// device busy even when nobody can see them. Sections marked with
+// data-pause-offscreen get the class "is-offscreen" while out of view,
+// and global.css pauses every animation inside them.
+(function initOffscreenPause() {
+  const areas = document.querySelectorAll("[data-pause-offscreen]");
+  if (!areas.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      entry.target.classList.toggle("is-offscreen", !entry.isIntersecting);
+    });
+  });
+
+  areas.forEach((area) => observer.observe(area));
 })();
 
 
@@ -176,12 +241,8 @@ initSmoothScroll();
 
     // Portrait parallax on mouse move
     const portrait = document.getElementById("hero-portrait");
-    if (portrait) {
-      window.addEventListener("mousemove", (e) => {
-        const x = (window.innerWidth  / 2 - e.clientX) / 40;
-        const y = (window.innerHeight / 2 - e.clientY) / 40;
-        gsap.to(portrait, { x, y, duration: 0.6, ease: "power2.out" });
-      });
+    if (portrait && HAS_MOUSE) {
+      window.addEventListener("mousemove", createMouseParallax(portrait, { strength: 40, duration: 0.6 }), { passive: true });
     }
   });
 
@@ -212,9 +273,9 @@ initSmoothScroll();
   );
 
   gsap.fromTo("#about-photo",
-    { opacity: 0, scale: 1.05, yPercent: -50 },
+    { opacity: 0, scale: 1.05 },
     {
-      opacity: 1, scale: 1, yPercent: -50, duration: 1.4, ease: "power3.out",
+      opacity: 1, scale: 1, duration: 1.4, ease: "power3.out",
       scrollTrigger: { trigger: "#about", start: "top 75%", toggleActions: "play none none none" }
     }
   );
@@ -232,11 +293,16 @@ initSmoothScroll();
     }
   );
 
-  // Subtle parallax on photo as you scroll through section
-  gsap.to("#about-photo", {
-    y: -60, ease: "none",
-    scrollTrigger: { trigger: "#about", start: "top bottom", end: "bottom top", scrub: 1.5 }
-  });
+  // Subtle parallax on photo as you scroll through section.
+  // It uses yPercent (around the -50 that centres the photo) so it does not
+  // fight the mouse parallax below, which uses y.
+  gsap.fromTo("#about-photo",
+    { yPercent: -47 },
+    {
+      yPercent: -53, ease: "none",
+      scrollTrigger: { trigger: "#about", start: "top bottom", end: "bottom top", scrub: 1.5 }
+    }
+  );
 
   // Animate the WHO I AM divider line
   gsap.fromTo("#about-divider",
@@ -251,14 +317,19 @@ initSmoothScroll();
   const aboutPhoto   = document.getElementById("about-photo");
   const aboutSection = document.getElementById("about");
 
-  if (aboutPhoto && aboutSection) {
+  if (aboutPhoto && aboutSection && HAS_MOUSE) {
+    const moveAboutPhoto = createMouseParallax(aboutPhoto, { strength: 30, duration: 0.8 });
+    let isAboutVisible = false;
+
+    // The browser tells us when the section enters or leaves the screen,
+    // so we do not measure its position on every mouse move.
+    new IntersectionObserver(([entry]) => {
+      isAboutVisible = entry.isIntersecting;
+    }).observe(aboutSection);
+
     document.addEventListener("mousemove", (e) => {
-      const rect = aboutSection.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-      const x = (window.innerWidth  / 2 - e.clientX) / 30;
-      const y = (window.innerHeight / 2 - e.clientY) / 30;
-      gsap.to(aboutPhoto, { x, y, duration: 0.8, ease: "power2.out" });
-    });
+      if (isAboutVisible) moveAboutPhoto(e);
+    }, { passive: true });
   }
 
   // Scroll-out overlay darkening
@@ -275,7 +346,7 @@ initSmoothScroll();
 (function initSkills() {
   // Animate the horizontal line — same as Projects
   gsap.to("#skills-line", {
-    width: 48, duration: 0.8, ease: "power3.out",
+    scaleX: 1, duration: 0.8, ease: "power3.out",
     scrollTrigger: { trigger: "#skills", start: "top 80%", toggleActions: "play none none none" }
   });
 
@@ -317,7 +388,7 @@ initSmoothScroll();
 (function initProjects() {
   // Animate the horizontal line
   gsap.to("#proj-line", {
-    width: 48, duration: 0.8, ease: "power3.out",
+    scaleX: 1, duration: 0.8, ease: "power3.out",
     scrollTrigger: { trigger: "#projects", start: "top 80%", toggleActions: "play none none none" }
   });
 
@@ -350,7 +421,7 @@ initSmoothScroll();
 (function initEducation() {
   // Animate the horizontal line
   gsap.to("#edu-line", {
-    width: 48, duration: 0.8, ease: "power3.out",
+    scaleX: 1, duration: 0.8, ease: "power3.out",
     scrollTrigger: { trigger: "#education", start: "top 80%", toggleActions: "play none none none" }
   });
 
@@ -379,7 +450,7 @@ initSmoothScroll();
 // ─────────────────────────────────────────────
 (function initContact() {
   gsap.to("#contact-line", {
-    width: 48, duration: 0.8, ease: "power3.out",
+    scaleX: 1, duration: 0.8, ease: "power3.out",
     scrollTrigger: { trigger: "#contact", start: "top 80%", toggleActions: "play none none none" }
   });
 

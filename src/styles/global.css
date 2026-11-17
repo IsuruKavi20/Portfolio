@@ -334,6 +334,13 @@ body.is-locked {
   transform: scaleX(0);
 }
 
+/* Looping animations stop while their section is out of view (main.js) */
+[data-pause-offscreen].is-offscreen *,
+[data-pause-offscreen].is-offscreen *::before,
+[data-pause-offscreen].is-offscreen *::after {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

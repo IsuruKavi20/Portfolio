@@ -25,8 +25,8 @@
       left: 0;
       pointer-events: none;
       opacity: 0;
-      transform: translate(-50%, -50%);
-      transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+      /* position and scale are set by GSAP in main.js (transform only) */
+      transition: opacity 0.25s ease, border-color 0.25s ease;
     }
 
     .cursor-dot {
@@ -46,7 +46,6 @@
     }
 
     html.has-cursor .cursor-ring.cursor-hover {
-      transform: translate(-50%, -50%) scale(1.5);
       border-color: #fff;
     }
   }
