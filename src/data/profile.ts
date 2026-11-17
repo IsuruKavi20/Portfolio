@@ -52,11 +52,11 @@ export const PROFILE: Profile = {
   gpa: '',
   skills: [
     'HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Astro', 'Tailwind CSS', 'shadcn/ui', 'GSAP', 'Three.js',
-    'Node.js', 'Java', 'Spring Boot', 'Python', '.NET', 'Prisma', 'Auth.js', 'Inngest (background jobs)', 'REST APIs', 'Gemini API',
+    'Node.js', 'Java', 'Spring Boot', 'Spring Security (OAuth 2.0, OIDC, JWT)', 'RabbitMQ', 'Flyway', 'Python', '.NET', 'Prisma', 'Auth.js', 'Inngest (background jobs)', 'REST APIs', 'Gemini API',
     'PostgreSQL', 'MySQL', 'MongoDB', 'SQL Server', 'Redis (Upstash)', 'Neon',
     'Git', 'Vitest', 'Playwright', 'Sentry', 'Cloudflare R2', 'Figma', 'Linux',
     // Deployment
-    'Vercel (auto-deploy from Git, preview and production)', 'Google Cloud Run', 'Docker containers',
+    'Vercel (auto-deploy from Git, preview and production)', 'AWS (EC2, S3, CloudFront, RDS)', 'Oracle Cloud (OKE)', 'Kubernetes (k3s, Helm)', 'Google Cloud Run', 'Docker containers',
     'GitHub Actions CI/CD', 'Secrets and environment variables', 'Firewall and rate limiting', 'Automated database backups',
   ],
   currentlyLearning: ['Building AI features into web apps (like this assistant)', 'Advanced web animation'],

@@ -48,6 +48,8 @@ const projects = defineCollection({
       highlights: z.array(z.string()).default([]),
       /** true while the text is still example content; shows a notice on the page */
       placeholder: z.boolean().default(false),
+      /** Solo = you built it alone; Team = a group project (say your part in "role") */
+      teamSize: z.enum(['Solo', 'Team']).optional(),
     }),
 });
 

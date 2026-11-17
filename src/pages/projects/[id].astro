@@ -59,6 +59,7 @@ const hasPrevNext = previous.id !== project.id;
         <div><dt>Year</dt><dd>{data.year}</dd></div>
         <div><dt>Role</dt><dd>{data.role}</dd></div>
         <div><dt>Status</dt><dd>{data.status}</dd></div>
+        {data.teamSize && <div><dt>Type</dt><dd>{data.teamSize === 'Solo' ? 'Solo project' : 'Team project'}</dd></div>}
       </dl>
 
       {hasLinks && (
@@ -249,7 +250,7 @@ const hasPrevNext = previous.id !== project.id;
 
   .pp-meta {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(4, auto);
     justify-content: start;
     gap: 2.5rem;
     margin-top: 2.5rem;
@@ -387,6 +388,32 @@ const hasPrevNext = previous.id !== project.id;
 
   .pp-body :global(p + p) {
     margin-top: 1rem;
+  }
+
+  .pp-body :global(h3) {
+    margin: 1.75rem 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--fg-strong);
+  }
+
+  .pp-body :global(ul) {
+    margin-top: 0.75rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+  }
+
+  .pp-body :global(li) {
+    margin-top: 0.4rem;
+  }
+
+  .pp-body :global(li::marker) {
+    color: var(--fg-faint);
+  }
+
+  .pp-body :global(strong) {
+    color: var(--fg-strong);
+    font-weight: 500;
   }
 
   .pp-body :global(a) {

@@ -7,11 +7,12 @@ interface Props {
   title: string;
   summary: string;
   status: string;
+  teamSize?: 'Solo' | 'Team';
   tech: TechId[];
   links: { live?: string; demo?: string; github?: string };
 }
 
-const { id, number, title, summary, status, tech, links } = Astro.props;
+const { id, number, title, summary, status, teamSize, tech, links } = Astro.props;
 ---
 
 <article class="project-card">
@@ -26,8 +27,9 @@ const { id, number, title, summary, status, tech, links } = Astro.props;
         {number}
       </span>
 
-      <span class="card-tag">
-        {status}
+      <span class="card-chips">
+        {teamSize && <span class="card-tag">{teamSize === 'Solo' ? 'Solo' : 'Team'}</span>}
+        <span class="card-tag">{status}</span>
       </span>
     </div>
 
@@ -118,6 +120,11 @@ const { id, number, title, summary, status, tech, links } = Astro.props;
 .project-card:has(.card-main-link:focus-visible) {
   outline: 1px solid rgba(255, 255, 255, 0.85);
   outline-offset: 4px;
+}
+
+.card-chips {
+  display: flex;
+  gap: 6px;
 }
 
 .card-tag {

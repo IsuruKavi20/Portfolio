@@ -20,6 +20,7 @@ export interface ProjectFacts {
   hasLiveSite: boolean;
   hasCode: boolean;
   isPlaceholder: boolean;
+  teamSize?: 'Solo' | 'Team';
 }
 
 /** Hard cap so a long project list can never blow up the prompt (cost and speed). */
@@ -33,7 +34,7 @@ function projectLine(project: ProjectFacts): string {
   }
   const parts = [
     `- [id: ${project.id}] ${project.title} (${project.status}, ${project.year}). ${project.summary}`,
-    `  Role: ${project.role}. Built with: ${project.tech.join(', ')}.`,
+    `  ${project.teamSize === 'Solo' ? 'Solo project (built alone)' : project.teamSize === 'Team' ? 'Team project' : ''} Role: ${project.role}. Built with: ${project.tech.join(', ')}.`,
     project.highlights.length ? `  Highlights: ${project.highlights.join('; ')}.` : '',
     `  Live site: ${project.hasLiveSite ? 'yes (button on its page)' : 'no'}. Code: ${project.hasCode ? 'yes (button on its page)' : 'not public'}.`,
   ];

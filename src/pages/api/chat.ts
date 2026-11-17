@@ -24,7 +24,7 @@ import { CHAT_ENABLED, GEMINI_API_KEY, GEMINI_MODEL } from 'astro:env/server';
 export const prerender = false;
 
 const MINUTE = 60_000;
-const MAX_WRITE_UP_CHARS = 2500;
+const MAX_WRITE_UP_CHARS = 6000;
 const DAY = 24 * 60 * MINUTE;
 
 // Per visitor: a burst limit and a daily limit. Globally: a daily ceiling
@@ -59,6 +59,7 @@ async function loadProjects() {
     hasLiveSite: Boolean(data.links.live),
     hasCode: Boolean(data.links.github),
     isPlaceholder: data.placeholder,
+    teamSize: data.teamSize,
   }));
   // The full write-up of each project, used only for the project being viewed
   const writeUps = new Map(entries.map((entry) => [entry.id, entry.data.placeholder ? '' : (entry.body ?? '')]));

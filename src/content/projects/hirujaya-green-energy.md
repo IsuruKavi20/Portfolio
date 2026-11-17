@@ -33,6 +33,7 @@ highlights:
   - "Mobile-first progressive web app for staff working at customer sites"
   - "Security tested: two-step login, account lockout, and an attack test of 229 server actions with no critical or high findings"
   - "Admins add products, regions and business settings themselves, with no code changes"
+teamSize: "Solo"
 placeholder: false
 ---
 
