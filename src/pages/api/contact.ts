@@ -13,6 +13,7 @@ import { CONTACT_TO, RESEND_API_KEY } from 'astro:env/server';
 import { contactSchema, looksLikeBot } from '../../lib/contact-schema';
 import { createRateLimiter, isJson, isSameOrigin } from '../../server/guard';
 import { buildContactEmail, sendWithResend } from '../../server/contact-email';
+import { FIREWALL_LIMITS, isOverFirewallLimit } from '../../server/firewall';
 import { PROFILE } from '../../data/profile';
 
 export const prerender = false;
@@ -44,6 +45,9 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   const visitor = clientAddress || 'unknown';
+  if (await isOverFirewallLimit(FIREWALL_LIMITS.contact, request)) {
+    return reply(429, { error: "You've sent a few messages already. Please wait a while, or email me directly." });
+  }
   if (!perHour(visitor) || !perDay(visitor)) {
     return reply(429, { error: "You've sent a few messages already. Please wait a while, or email me directly." });
   }

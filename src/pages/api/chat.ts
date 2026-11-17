@@ -18,6 +18,7 @@ import { createRateLimiter, isChatEnabled, isJson, isSameOrigin, MAX_BODY_BYTES 
 import { demoProvider, type AiProvider } from '../../server/ai-provider';
 import { createGeminiProvider } from '../../server/gemini-provider';
 import { cleanReply } from '../../server/reply-filter';
+import { FIREWALL_LIMITS, isOverFirewallLimit } from '../../server/firewall';
 import { CHAT_ENABLED, GEMINI_API_KEY, GEMINI_MODEL } from 'astro:env/server';
 
 export const prerender = false;
@@ -88,6 +89,9 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   const visitor = clientAddress || 'unknown';
+  if (await isOverFirewallLimit(FIREWALL_LIMITS.chat, request)) {
+    return reply(429, { error: 'You are fast! Please wait a little before the next message.' });
+  }
   if (!perMinute(visitor) || !perDay(visitor)) {
     return reply(429, { error: 'You are fast! Please wait a little before the next message.' });
   }
