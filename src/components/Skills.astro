@@ -1,29 +1,23 @@
 ---
+import SectionHeader from './SectionHeader.astro';
 ---
 
-<section id="skills" class="relative bg-black text-white py-40 overflow-hidden">
+<section id="skills" class="relative bg-black text-white py-24 md:py-40 overflow-hidden">
 
   <!-- Header — line + label + compact title (same structure as projects, smaller font) -->
-  <div class="max-w-7xl mx-auto px-6 md:px-16 mb-24">
+  <div class="max-w-7xl mx-auto px-6 md:px-16 mb-14 md:mb-24">
 
-    <div class="flex items-center gap-6 mb-6">
-      <div id="skills-line" class="skills-line"></div>
-      <p id="skills-label" class="text-xs uppercase tracking-[0.4em] text-gray-500 opacity-0">CAPABILITIES</p>
-    </div>
-
-    <h2 id="skills-title" class="skills-title opacity-0">
-      Skills &amp; Technologies
-    </h2>
-
-    <p id="skills-desc" class="skills-desc opacity-0">
-      A growing toolkit of languages, frameworks, and tools<br/>
-      built through projects, study, and hands-on experience.
-    </p>
+    <SectionHeader
+      prefix="skills"
+      label="Capabilities"
+      title="Skills & Technologies"
+      description="A growing toolkit of languages, frameworks, and tools built through projects, study, and hands-on experience."
+    />
 
   </div>
 
-  <!-- Skills Grid — 4 cols with hairline separator -->
-  <div class="max-w-7xl mx-auto px-6 md:px-16 grid md:grid-cols-2 lg:grid-cols-4 divide-x divide-white/[0.06]">
+  <!-- Skills Grid — 4 cols with hairline separator; a swipe carousel on phones -->
+  <div id="skills-row" data-snap-row class="snap-row max-w-7xl mx-auto px-6 md:px-16 grid md:grid-cols-2 lg:grid-cols-4 divide-x divide-white/[0.06]">
 
     <!-- Frontend -->
     <div class="skill-card" id="skill-col-0">
@@ -79,6 +73,13 @@
 
   </div>
 
+  <!-- Phones only: which card you are on -->
+  <p class="snap-count" data-snap-count="skills-row" aria-hidden="true">
+    <span data-snap-current>01</span>
+    <span class="snap-count-track"><span class="snap-count-fill"></span></span>
+    <span data-snap-total>04</span>
+  </p>
+
   <!-- Scroll-out darkening overlay -->
   <div id="skills-overlay" class="skills-overlay"></div>
 
@@ -87,41 +88,11 @@
 <style>
 
 /* ── Header ── */
-.skills-line {
-  width: 48px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.25);
-  transform-origin: left;
-}
 
-:global(.motion) .skills-line {
-  transform: scaleX(0);
-}
 
 /* Same font size as original — compact, not giant */
-.skills-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  color: white;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(16px);
-}
 
-.skills-desc {
-  margin-top: 16px;
-  font-size: 13px;
-  line-height: 1.9;
-  color: rgba(255, 255, 255, 0.35);
-  max-width: 480px;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(16px);
-}
 
-#skills-label {
-  transform: translateY(16px);
-}
 
 /* ── Cards ── */
 .skill-card {
@@ -157,7 +128,7 @@
 .skill-category {
   font-size: 9px;
   letter-spacing: 0.35em;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   margin-bottom: 28px;
   font-family: 'Inter', sans-serif;
   text-transform: uppercase;
@@ -172,7 +143,7 @@
 .skill-list li {
   font-size: 14px;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.7);
   padding: 12px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-family: 'Inter', sans-serif;
@@ -188,6 +159,29 @@
 
 .skill-list li:hover {
   color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Phones: each column becomes a card in the carousel ── */
+@media (max-width: 767px) {
+  .skill-card {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+
+  /* The card in view lights up, like hover does on desktop */
+  .skill-card.is-active {
+    background: rgba(255, 255, 255, 0.045);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .skill-card.is-active .skill-bar {
+    transform: scaleX(1);
+  }
+
+  .skill-card:hover {
+    transform: none !important;
+  }
 }
 
 /* ── Scroll-out overlay ── */

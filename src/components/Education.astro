@@ -1,4 +1,5 @@
 ---
+import SectionHeader from './SectionHeader.astro';
 ---
 
 <section id="education" class="relative bg-black text-white py-40 overflow-hidden">
@@ -8,26 +9,17 @@
     <!-- Header — same pattern as Skills & Projects -->
     <div class="mb-20">
 
-      <div class="flex items-center gap-6 mb-6">
-        <div id="edu-line" class="edu-line"></div>
-        <p id="edu-label" class="text-xs uppercase tracking-[0.4em] text-gray-500 opacity-0">
-          Academic Background
-        </p>
-      </div>
-
-      <h2 id="edu-title" class="edu-title opacity-0">
-        Education
-      </h2>
-
-      <p id="edu-desc" class="edu-desc opacity-0">
-        My academic foundation in information technology continues to shape how I<br/>
-        approach design, development, and interactive digital experiences.
-      </p>
+      <SectionHeader
+        prefix="edu"
+        label="Academic Background"
+        title="Education"
+        description="My academic foundation in information technology continues to shape how I approach design, development, and interactive digital experiences."
+      />
 
     </div>
 
     <!-- Education card -->
-    <div id="edu-card" class="edu-card opacity-0">
+    <div id="edu-card" class="edu-card" data-reveal>
 
       <!-- Glowing top bar (matches project/skill card) -->
       <div class="edu-bar"></div>
@@ -75,40 +67,10 @@
 <style>
 
 /* ── Header ── */
-.edu-line {
-  width: 48px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.25);
-  transform-origin: left;
-}
 
-:global(.motion) .edu-line {
-  transform: scaleX(0);
-}
 
-.edu-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  color: white;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(16px);
-}
 
-.edu-desc {
-  margin-top: 16px;
-  font-size: 13px;
-  line-height: 1.9;
-  color: rgba(255, 255, 255, 0.35);
-  max-width: 540px;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(16px);
-}
 
-#edu-label {
-  transform: translateY(16px);
-}
 
 /* ── Card ── */
 .edu-card {
@@ -166,7 +128,7 @@
 .edu-year {
   font-size: 10px;
   letter-spacing: 0.3em;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   font-family: 'Inter', sans-serif;
   text-transform: uppercase;
   margin-bottom: 20px;
@@ -214,7 +176,7 @@
 .edu-body {
   font-size: 13px;
   line-height: 1.9;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   font-family: 'Inter', sans-serif;
   margin-bottom: 28px;
 }
@@ -228,8 +190,8 @@
 .edu-tag {
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 4px 12px;
   border-radius: 2px;
   font-family: 'Inter', sans-serif;
@@ -239,6 +201,25 @@
 .edu-card:hover .edu-tag {
   color: rgba(255, 255, 255, 0.55);
   border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Phones ── */
+@media (max-width: 767px) {
+  #education {
+    padding-block: 6rem;
+  }
+
+  .edu-card {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .edu-card:hover {
+    transform: none !important;
+  }
+
+  .edu-left {
+    min-width: 0;
+  }
 }
 
 /* ── Scroll-out overlay ── */

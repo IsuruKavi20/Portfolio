@@ -21,7 +21,7 @@ import aboutPhoto from '../assets/images/about.png';
   </div>
 
   <!-- Right-side info panel -->
-  <div id="about-info" class="absolute right-16 top-1/2 max-w-sm z-20 opacity-0" style="transform: translateY(calc(-50% + 30px))">
+  <div id="about-info" class="about-info max-w-sm z-20" data-reveal>
 
     <p class="text-xs tracking-[0.4em] text-gray-500 uppercase mb-4">WHO I AM</p>
     <div id="about-divider" class="w-8 h-px bg-white mb-8 origin-left" style="opacity:0.3"></div>
@@ -112,6 +112,59 @@ import aboutPhoto from '../assets/images/about.png';
   border-color: rgba(255, 255, 255, 0.5);
   color: rgba(255, 255, 255, 0.9);
 }
+/* Desktop: the info panel floats on the right, vertically centred */
+.about-info {
+  position: absolute;
+  right: 4rem;
+  top: 50%;
+  transform: translateY(calc(-50% + 30px));
+}
+
+/* ── Phones: photo on top, the big letters cut across its lower edge,
+      then the text flows below. Nothing overlaps the reading text. ── */
+@media (max-width: 767px) {
+  #about {
+    justify-content: flex-start;
+    padding-top: 6rem;
+    padding-bottom: 5rem;
+    min-height: 0;
+  }
+
+  .about-photo {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 82%;
+    margin-left: auto;   /* photo leans right, letters start left: an off-centre, editorial look */
+  }
+
+  #about-clip {
+    /* Pull the letters up so they overlap the bottom of the photo */
+    margin-top: -0.9em;
+    font-size: 22vw;
+  }
+
+  .clip-text {
+    font-size: 1em;
+    padding-left: var(--gutter);
+    -webkit-text-stroke-width: 2px;
+  }
+
+  .about-info {
+    position: relative;
+    right: auto;
+    top: auto;
+    max-width: none;
+    margin-top: 2.5rem;
+    padding-inline: var(--gutter);
+    transform: translateY(30px);
+  }
+
+  .about-info h3 {
+    font-size: 1.6rem;
+  }
+}
+
 .about-overlay{
   position:absolute;
   inset:0;

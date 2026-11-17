@@ -10,8 +10,8 @@
   --fg: #fff;
   --fg-strong: rgba(255, 255, 255, 0.88);
   --fg-muted: rgba(255, 255, 255, 0.62);
-  --fg-soft: rgba(255, 255, 255, 0.5);
-  --fg-faint: rgba(255, 255, 255, 0.4);
+  --fg-soft: rgba(255, 255, 255, 0.58);
+  --fg-faint: rgba(255, 255, 255, 0.45);
 
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.2);
@@ -147,7 +147,7 @@ body.is-locked {
 
 .sec-desc {
   margin-top: 1rem;
-  max-width: 34rem;
+  max-width: 30rem;
   font-size: 0.875rem;
   line-height: 1.9;
   color: var(--fg-soft);
@@ -230,6 +230,19 @@ body.is-locked {
   }
 }
 
+/* Touch screens have no hover, so every link and button answers the finger */
+@media (hover: none) {
+  a,
+  button {
+    transition: opacity var(--dur-fast) ease, transform var(--dur-fast) var(--ease-out);
+  }
+
+  a:active,
+  button:active {
+    opacity: 0.6;
+  }
+}
+
 /* Touch feedback: every tappable thing answers the finger */
 .pressable {
   transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) ease;
@@ -272,49 +285,65 @@ body.is-locked {
   transform: scaleX(1);
 }
 
-/* ─── Swipe row: carousel on phones, grid from tablet up ── */
-.snap-row {
-  display: flex;
-  gap: 12px;
-  margin-inline: calc(var(--gutter) * -1);
-  padding-inline: var(--gutter);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--gutter);
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-}
-
-.snap-row::-webkit-scrollbar {
+/* ─── Swipe row: a carousel on phones only ───────────────
+   Larger screens keep whatever layout the element already has (a grid).
+   On phones the cards sit side by side; a swipe moves one card and it
+   snaps into place. The next card peeks in at the edge as a hint.
+   snap-rows.js keeps the "01 / 04" counter and the active card in sync. */
+.snap-count {
   display: none;
 }
 
-.snap-row > * {
-  flex: 0 0 84%;
-  scroll-snap-align: start;
-}
-
-.snap-count {
-  margin-top: 1.5rem;
-  font-size: 0.6875rem;
-  letter-spacing: 0.3em;
-  color: var(--fg-faint);
-  font-variant-numeric: tabular-nums;
-}
-
-@media (min-width: 768px) {
+@media (max-width: 767px) {
   .snap-row {
-    margin-inline: 0;
-    padding-inline: 0;
-    overflow: visible;
+    display: flex;
+    gap: 12px;
+    /* 1.5rem matches the sections' side padding (px-6), so cards line up with the titles */
+    padding-inline: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.5rem;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;   /* a sideways swipe never drags the page */
+  }
+
+  .snap-row::-webkit-scrollbar {
+    display: none;
   }
 
   .snap-row > * {
-    flex: initial;
+    flex: 0 0 82%;
+    scroll-snap-align: start;
   }
 
   .snap-count {
-    display: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-inline: 1.5rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.3em;
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A thin track whose bright part moves with the active card */
+  .snap-count-track {
+    position: relative;
+    width: 64px;
+    height: 1px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .snap-count-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--fg-muted);
+    transform-origin: left;
+    transform: scaleX(var(--snap-progress, 0.25));
+    transition: transform 0.4s var(--ease-out);
   }
 }
 
@@ -323,10 +352,13 @@ body.is-locked {
    so content stays visible without JavaScript or with reduced motion. */
 .motion .sec-label,
 .motion .sec-title,
-.motion .sec-desc,
-.motion [data-reveal],
-.motion [data-hero] {
-  visibility: hidden;
+.motion .sec-desc {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.motion [data-reveal] {
+  opacity: 0;
 }
 
 .motion .sec-line,

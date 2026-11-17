@@ -1,6 +1,9 @@
-<nav id="navbar" class="fixed top-10 right-16 z-50 opacity-0" style="transform: translateY(-20px)">
+<!-- Centered at the top on every screen size. The full-width wrapper does the
+     centering (not a translateX), because GSAP animates this element's
+     transform on entrance and would overwrite it. -->
+<nav id="navbar" class="navbar" data-reveal aria-label="Main">
 
-  <ul class="flex gap-8 text-xs tracking-[0.25em] text-gray-500">
+  <ul class="nav-list">
     <li><a href="#about"     class="nav-link" data-section="about">ABOUT</a></li>
     <li><a href="#skills"    class="nav-link" data-section="skills">SKILLS</a></li>
     <li><a href="#projects"  class="nav-link" data-section="projects">PROJECTS</a></li>
@@ -10,13 +13,307 @@
 
 </nav>
 
+<!-- Phones: a floating button in the thumb zone. Its ring fills as you scroll
+     the page; the number is the section you are in. Tapping it pops the
+     sections up above it. Kept outside <nav id="navbar"> because that
+     element is moved with a transform on entrance, which would break
+     position: fixed for anything inside it. -->
+<div id="navPop" class="nav-pop">
+  <div class="nav-pop-backdrop" data-nav-pop-close aria-hidden="true"></div>
+
+  <ol id="navPopList" class="nav-pop-list" aria-label="Sections">
+    {[
+      ['about', 'About'],
+      ['skills', 'Skills'],
+      ['projects', 'Projects'],
+      ['education', 'Education'],
+      ['contact', 'Contact'],
+    ].map(([id, label], index) => (
+      <li class="nav-pop-item" style={`--i: ${4 - index}`}>
+        <a href={`#${id}`} class="pop-link pressable" data-section={id}>
+          <span class="pop-label">{label}</span>
+          <span class="pop-number">{String(index + 1).padStart(2, '0')}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+
+  <button
+    id="navPopToggle"
+    class="nav-pop-toggle pressable"
+    type="button"
+    aria-expanded="false"
+    aria-controls="navPopList"
+    aria-label="Open sections"
+  >
+    <svg class="nav-pop-ring" viewBox="0 0 56 56" aria-hidden="true">
+      <circle class="ring-track" cx="28" cy="28" r="26" />
+      <circle id="navPopProgress" class="ring-progress" cx="28" cy="28" r="26" pathLength="1" />
+    </svg>
+    <span id="navPopIndex" class="nav-pop-index">00</span>
+    <span class="nav-pop-close" aria-hidden="true"></span>
+  </button>
+</div>
+
 
 
 
 <style>
 
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  /* Clears the phone notch; 2.5rem matches the old top-10 on desktop */
+  padding: calc(1.25rem + env(safe-area-inset-top)) 12px 0;
+  pointer-events: none;   /* the empty strip around the links stays clickable below */
+}
+
+/* Starts slightly raised; the hero animation brings it down (sections.js) */
+:global(.motion) .navbar {
+  transform: translateY(-20px);
+}
+
+.nav-list {
+  /* Sizes shrink with the screen so all five links fit on a 320px phone */
+  --tracking: clamp(0.08em, 0.55vw, 0.25em);
+  display: flex;
+  gap: clamp(0.5rem, 2.6vw, 2rem);
+  font-size: clamp(0.5625rem, 2.5vw, 0.75rem);
+  letter-spacing: var(--tracking);
+  /* Letter spacing also adds space after the last letter; this balances it
+     on the left so the row sits truly in the middle */
+  padding-left: var(--tracking);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: auto;
+}
+
+/* Phones use the popup button instead of the top row */
+@media (max-width: 767px) {
+  .navbar {
+    display: none;
+  }
+}
+
+/* ── Popup button (phones only) ── */
+.nav-pop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .nav-pop {
+    display: block;
+  }
+}
+
+.nav-pop-toggle {
+  position: fixed;
+  right: calc(1.25rem + env(safe-area-inset-right));
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  z-index: 52;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  /* Hidden until the visitor enters the site */
+  opacity: 0;
+  transform: translateY(16px) scale(0.9);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s var(--ease-out);
+}
+
+.nav-pop.is-visible .nav-pop-toggle {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.nav-pop-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);   /* the ring starts filling from the top */
+}
+
+.ring-track,
+.ring-progress {
+  fill: none;
+  stroke-width: 1;
+}
+
+.ring-track {
+  stroke: rgba(255, 255, 255, 0.15);
+}
+
+.ring-progress {
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;   /* set by nav-popup.js as the page scrolls */
+}
+
+.nav-pop-index {
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  padding-left: 0.15em;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.25s ease, transform 0.35s var(--ease-out);
+}
+
+/* A thin X that replaces the number while open */
+.nav-pop-close {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  opacity: 0;
+  transform: rotate(-45deg) scale(0.6);
+  transition: opacity 0.25s ease, transform 0.35s var(--ease-out);
+}
+
+.nav-pop-close::before,
+.nav-pop-close::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #fff;
+  transform: rotate(45deg);
+}
+
+.nav-pop-close::after {
+  transform: rotate(-45deg);
+}
+
+.nav-pop.is-open .nav-pop-index {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.nav-pop.is-open .nav-pop-close {
+  opacity: 1;
+  transform: none;
+}
+
+/* Dim, blurred page behind the open popup; tapping it closes */
+.nav-pop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 51;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.nav-pop.is-open .nav-pop-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The sections rise out of the button, nearest first */
+.nav-pop-list {
+  position: fixed;
+  right: calc(1.25rem + env(safe-area-inset-right));
+  bottom: calc(1.25rem + 56px + 0.75rem + env(safe-area-inset-bottom));
+  z-index: 52;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.nav-pop-item {
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
+  transform-origin: right bottom;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition-delay: 0s;
+}
+
+.nav-pop.is-open .nav-pop-item {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s ease, transform 0.5s var(--ease-out);
+  transition-delay: calc(var(--i) * 45ms);
+}
+
+.nav-pop.is-open .nav-pop-list {
+  pointer-events: auto;
+}
+
+.pop-link {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 44px;
+  padding: 0 0.6rem 0 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.85);
+  color: var(--fg-muted);
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.pop-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.pop-number {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--fg-faint);
+  border: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+
+.pop-link.nav-active {
+  color: #fff;
+  border-color: var(--line-strong);
+}
+
+.pop-link.nav-active .pop-number {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+@media (min-width: 768px) {
+  .navbar {
+    padding-top: 2.5rem;
+  }
+}
+
 .nav-link {
   position: relative;
+  display: inline-block;
+  /* Taller tap target on phones without moving the text */
+  padding: 10px 0;
   transition: color 0.3s ease;
   font-family: 'Inter', sans-serif;
 }
@@ -25,14 +322,15 @@
   content: "";
   position: absolute;
   left: 0;
-  bottom: -4px;
+  bottom: 6px;
   width: 0%;
   height: 1px;
   background: white;
   transition: width 0.35s ease;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link:active {
   color: rgba(255, 255, 255, 0.85);
 }
 

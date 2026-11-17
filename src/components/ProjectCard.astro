@@ -1,14 +1,5 @@
 ---
 const { number, title, description, tech, status, github, live } = Astro.props;
-
-// Status colour mapping
-const statusColor: Record<string, string> = {
-  "In Progress":  "status-progress",
-  "Coming Soon":  "status-soon",
-  "Concept":      "status-concept",
-  "Live":         "status-live",
-};
-const colorClass = statusColor[status] ?? "status-concept";
 ---
 
 <article class="project-card">
@@ -19,7 +10,7 @@ const colorClass = statusColor[status] ?? "status-concept";
   <div>
 
     <div class="flex items-start justify-between">
-      <span class="text-xs tracking-[0.3em] text-gray-600">
+      <span class="text-xs tracking-[0.3em] text-gray-500">
         {number}
       </span>
 
@@ -94,64 +85,12 @@ const colorClass = statusColor[status] ?? "status-concept";
   transform: scaleX(1);
 }
 
-/* Header */
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
-}
 
-.card-number {
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  color: rgba(255, 255, 255, 0.2);
-  font-family: 'Inter', sans-serif;
-}
 
-/* Status badges */
-.card-status {
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid;
-  font-family: 'Inter', sans-serif;
-}
 
-/* Title */
-.card-title {
-  font-size: clamp(1.25rem, 2vw, 1.6rem);
-  font-weight: 300;
-  color: white;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  font-family: 'Cormorant Garamond', serif;
-  margin-bottom: 20px;
-}
 
-/* Hairline divider */
-.card-divider {
-  width: 32px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.15);
-  margin-bottom: 16px;
-  transition: width 0.4s ease;
-}
-.project-card:hover .card-divider {
-  width: 56px;
-}
 
-/* Description */
 
-/* Tech tags */
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 20px;
-}
 .card-tag {
   font-size: 10px;
   letter-spacing: 0.12em;
@@ -167,28 +106,5 @@ const colorClass = statusColor[status] ?? "status-concept";
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Links */
-.card-links {
-  display: flex;
-  gap: 24px;
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-}
-.card-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
-  font-family: 'Inter', sans-serif;
-  transition: color 0.3s ease, gap 0.3s ease;
-}
-.card-link:hover {
-  color: rgba(255, 255, 255, 0.9);
-  gap: 10px;
-}
 
 </style>

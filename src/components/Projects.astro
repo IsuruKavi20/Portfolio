@@ -1,41 +1,40 @@
 ---
+import SectionHeader from './SectionHeader.astro';
 import { projects } from "../data/projects";
 import ProjectCard from "./ProjectCard.astro";
 ---
 
-<section id="projects" class="relative bg-black text-white py-40 overflow-hidden">
+<section id="projects" class="relative bg-black text-white py-24 md:py-40 overflow-hidden">
 
   <div class="max-w-7xl mx-auto px-6 md:px-16">
 
     <!-- Section header -->
-    <div class="projects-header mb-20">
+    <div class="projects-header mb-14 md:mb-20">
 
-      <div class="flex items-center gap-6 mb-6">
-        <div id="proj-line" class="proj-line"></div>
-        <p id="proj-label" class="text-xs uppercase tracking-[0.4em] text-gray-500 opacity-0">
-          Selected Work
-        </p>
-      </div>
-
-      <h2 id="proj-title" class="proj-title opacity-0">
-        Projects
-      </h2>
-
-      <p id="proj-desc" class="proj-desc opacity-0">
-        A curated collection of builds, experiments, and upcoming work.<br/>
-        Each project represents a step forward in craft and curiosity.
-      </p>
+      <SectionHeader
+        prefix="proj"
+        label="Selected Work"
+        title="Projects"
+        description="A curated collection of builds, experiments, and upcoming work. Each project represents a step forward in craft and curiosity."
+      />
 
     </div>
 
-    <!-- Cards grid -->
-    <div class="proj-grid">
+    <!-- Cards grid; a swipe carousel on phones -->
+    <div id="projects-row" data-snap-row class="proj-grid snap-row">
       {projects.map((project, i) => (
         <div class="proj-card-wrap" data-index={i}>
           <ProjectCard {...project} />
         </div>
       ))}
     </div>
+
+    <!-- Phones only: which card you are on -->
+    <p class="snap-count" data-snap-count="projects-row" aria-hidden="true">
+      <span data-snap-current>01</span>
+      <span class="snap-count-track"><span class="snap-count-fill"></span></span>
+      <span data-snap-total>{String(projects.length).padStart(2, '0')}</span>
+    </p>
 
   </div>
 
@@ -46,40 +45,10 @@ import ProjectCard from "./ProjectCard.astro";
 
 <style>
 
-.proj-line {
-  width: 48px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.25);
-  transform-origin: left;
-}
 
-:global(.motion) .proj-line {
-  transform: scaleX(0);
-}
 
-.proj-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  color: white;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(20px);
-}
 
-.proj-desc {
-  margin-top: 20px;
-  font-size: 13px;
-  line-height: 1.9;
-  color: rgba(255, 255, 255, 0.35);
-  max-width: 480px;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(20px);
-}
 
-#proj-label {
-  transform: translateY(20px);
-}
 
 .proj-grid {
   display: grid;
@@ -91,6 +60,42 @@ import ProjectCard from "./ProjectCard.astro";
 
 .proj-card-wrap {
   background: black;
+}
+
+/* ── Phones: the grid becomes a swipe carousel (see .snap-row in global.css) ── */
+@media (max-width: 767px) {
+  .proj-grid {
+    display: flex;
+    gap: 12px;
+    background: none;
+    border: none;
+    /* Reach the screen edges so cards can slide in and out of view;
+       1.5rem cancels the container's side padding (px-6) */
+    margin-inline: -1.5rem;
+  }
+
+  .proj-card-wrap {
+    background: none;
+  }
+
+  /* The row already lines up with the page text, so no extra padding */
+  #projects .snap-count {
+    padding-inline: 0;
+  }
+
+  /* The card in view lights up, like hover does on desktop */
+  .proj-card-wrap.is-active :global(.project-card) {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .proj-card-wrap.is-active :global(.card-bar) {
+    transform: scaleX(1);
+  }
+
+  .proj-card-wrap :global(.project-card:hover) {
+    transform: none;
+  }
 }
 
 .projects-overlay {

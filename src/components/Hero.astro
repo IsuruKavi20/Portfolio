@@ -2,33 +2,31 @@
 import { Image } from 'astro:assets';
 import portrait from '../assets/images/portrait.png';
 ---
-<section id="hero" data-pause-offscreen class="relative bg-black text-white h-screen flex flex-col justify-center overflow-hidden opacity-0">
+<section id="hero" data-pause-offscreen class="relative bg-black text-white h-screen flex flex-col justify-center overflow-hidden" data-reveal>
 
-  <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 items-center px-12 flex-1">
+  <div class="hero-grid max-w-7xl mx-auto w-full grid md:grid-cols-2 items-center px-[var(--gutter)] md:px-12 flex-1">
 
-    <!-- LEFT: TEXT -->
-    <div>
+    <!-- LEFT: TEXT (on phones it sits at the bottom, over the photo) -->
+    <div class="hero-text">
 
-
-
-      <h1 class="font-light leading-none mb-8" style="font-size: clamp(3rem, 6vw, 5.5rem);">
+      <h1 class="hero-name font-light leading-none mb-8">
         <span class="word block">Isuru K.</span>
         <span class="word block">Premasiri</span>
       </h1>
 
-      <div id="hero-line" class="w-16 h-px bg-white mb-8 origin-left scale-x-0" style="opacity:0.3"></div>
+      <div id="hero-line" class="w-16 h-px bg-white mb-8 origin-left" data-hero-line style="opacity:0.3"></div>
 
-      <p id="hero-subtitle" class="text-xl text-gray-400 mb-4 opacity-0">
+      <p id="hero-subtitle" class="text-xl text-gray-400 mb-4" data-reveal>
         Creative Developer
       </p>
 
-      <p id="hero-desc" class="text-gray-500 max-w-md leading-relaxed opacity-0">
+      <p id="hero-desc" class="text-gray-400 max-w-md leading-relaxed" data-reveal>
         Exploring the boundary between design and code —<br/>
         building interactive web experiences that feel cinematic.
       </p>
 
       <!-- Social links -->
-      <div id="hero-socials" class="flex items-center gap-5 mt-8 opacity-0">
+      <div id="hero-socials" class="flex items-center gap-5 mt-8" data-reveal>
 
         <a href="https://github.com/isurukavi20" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -55,8 +53,8 @@ import portrait from '../assets/images/portrait.png';
 
     </div>
 
-    <!-- RIGHT: PORTRAIT -->
-    <div class="relative h-full flex items-center justify-end" style="max-height: calc(100vh - 4rem)">
+    <!-- RIGHT: PORTRAIT (on phones it fills the screen behind the text) -->
+    <div class="hero-portrait-wrap relative h-full flex items-center justify-end">
       <Image
         id="hero-portrait"
         src={portrait}
@@ -65,14 +63,15 @@ import portrait from '../assets/images/portrait.png';
         sizes="(min-width: 768px) 40vw, 100vw"
         loading="eager"
         fetchpriority="high"
-        class="portrait-img h-full w-auto object-cover opacity-0"
+        class="portrait-img h-full w-auto object-cover"
+        data-reveal
       />
     </div>
 
   </div>
 
   <!-- Scroll indicator -->
-  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-xs tracking-widest text-gray-600 flex flex-col items-center">
+  <div class="hero-scroll absolute bottom-10 left-1/2 -translate-x-1/2 text-xs tracking-widest text-gray-500 flex flex-col items-center">
     <span>SCROLL</span>
     <div class="scroll-line mt-3">
       <div class="scroll-drip"></div>
@@ -85,6 +84,91 @@ import portrait from '../assets/images/portrait.png';
 
 
 <style>
+
+.hero-name {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+}
+
+.hero-portrait-wrap {
+  max-height: calc(100vh - 4rem);
+}
+
+/* ── Phones: the photo fills the screen, the text sits at the bottom ── */
+@media (max-width: 767px) {
+  #hero {
+    /* svh = the screen height with the browser bars showing, so the layout
+       does not jump when the address bar hides while scrolling */
+    height: 100svh;
+    min-height: 560px;
+  }
+
+  .hero-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom));   /* room for the scroll hint */
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-name {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+    margin-bottom: 1.25rem;
+  }
+
+  #hero-line {
+    margin-bottom: 1.25rem;
+  }
+
+  #hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #hero-desc {
+    font-size: 0.875rem;
+  }
+
+  /* The forced line break only makes sense on wide screens */
+  #hero-desc br {
+    display: none;
+  }
+
+  #hero-socials {
+    margin-top: 1.5rem;
+  }
+
+  .hero-portrait-wrap {
+    position: absolute;
+    inset: 0;
+    max-height: none;
+    z-index: 0;
+  }
+
+  /* #hero raises priority above the desktop rules further down this file */
+  #hero .portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 15%;   /* keep the face in view */
+    /* Fade the lower part into black so the text on top stays readable */
+    mask-image: linear-gradient(to bottom, black 30%, rgba(0, 0, 0, 0.35) 60%, transparent 85%);
+    -webkit-mask-image: linear-gradient(to bottom, black 30%, rgba(0, 0, 0, 0.35) 60%, transparent 85%);
+    mask-composite: add;
+    -webkit-mask-composite: source-over;
+  }
+
+  .hero-scroll {
+    bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  #hero .scroll-line {
+    height: 36px;
+  }
+}
 
 .portrait-img {
   mask-image:
@@ -127,7 +211,7 @@ import portrait from '../assets/images/portrait.png';
 }
 
 .social-link {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.5);
   transition: color 0.3s ease, transform 0.3s ease;
   display: flex;
   align-items: center;

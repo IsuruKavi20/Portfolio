@@ -1,4 +1,5 @@
 ---
+import SectionHeader from './SectionHeader.astro';
 ---
 
 <section id="contact" data-pause-offscreen class="relative bg-black text-white py-40 overflow-hidden">
@@ -8,26 +9,17 @@
     <!-- Header — same pattern as all other sections -->
     <div class="mb-20">
 
-      <div class="flex items-center gap-6 mb-6">
-        <div id="contact-line" class="contact-line"></div>
-        <p id="contact-label" class="text-xs uppercase tracking-[0.4em] text-gray-500 opacity-0">
-          Say Hello
-        </p>
-      </div>
-
-      <h2 id="contact-title" class="contact-title opacity-0">
-        Get In Touch
-      </h2>
-
-      <p id="contact-desc" class="contact-desc opacity-0">
-        I'm currently looking for internship opportunities. Whether you have a question<br/>
-        or just want to say hi, feel free to reach out!
-      </p>
+      <SectionHeader
+        prefix="contact"
+        label="Say Hello"
+        title="Get In Touch"
+        description="I'm currently looking for internship opportunities. Whether you have a question or just want to say hi, feel free to reach out!"
+      />
 
     </div>
 
     <!-- Two-column layout: Form + Info -->
-    <div id="contact-body" class="contact-layout opacity-0">
+    <div id="contact-body" class="contact-layout" data-reveal>
 
       <!-- Left: Contact form -->
       <form id="contact-form" class="contact-form" novalidate>
@@ -167,40 +159,10 @@ form.addEventListener("submit", async (e) => {
 <style>
 
 /* ── Header ── */
-.contact-line {
-  width: 48px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.25);
-  transform-origin: left;
-}
 
-:global(.motion) .contact-line {
-  transform: scaleX(0);
-}
 
-.contact-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  color: white;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(16px);
-}
 
-.contact-desc {
-  margin-top: 16px;
-  font-size: 13px;
-  line-height: 1.9;
-  color: rgba(255, 255, 255, 0.35);
-  max-width: 540px;
-  font-family: 'Inter', sans-serif;
-  transform: translateY(16px);
-}
 
-#contact-label {
-  transform: translateY(16px);
-}
 
 /* ── Layout ── */
 .contact-layout {
@@ -244,7 +206,7 @@ form.addEventListener("submit", async (e) => {
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.55);
   font-family: 'Inter', sans-serif;
 }
 
@@ -263,7 +225,7 @@ form.addEventListener("submit", async (e) => {
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .form-input:focus {
@@ -332,7 +294,7 @@ form.addEventListener("submit", async (e) => {
   font-size: 9px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   font-family: 'Inter', sans-serif;
   margin-bottom: 10px;
 }
@@ -372,6 +334,35 @@ form.addEventListener("submit", async (e) => {
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── Phones ── */
+@media (max-width: 767px) {
+  #contact {
+    padding-block: 6rem;
+  }
+
+  .contact-layout {
+    gap: 3.5rem;
+  }
+
+  /* Under 16px, iPhones zoom the whole page in when a field is tapped */
+  .form-input {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  .submit-btn {
+    align-self: stretch;
+    justify-content: center;
+    min-height: 52px;
+  }
+
+  .info-link {
+    display: inline-block;
+    padding-block: 6px;   /* easier to tap */
+    word-break: break-word;
+  }
 }
 
 /* ── Scroll-out overlay ── */

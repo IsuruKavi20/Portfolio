@@ -1,0 +1,25 @@
+---
+/**
+ * The header every content section shares: a short line, a small label,
+ * the title and one line of description. Styles live in global.css
+ * (.sec-*), animation in sections.js (revealSectionHeader).
+ */
+interface Props {
+  /** id prefix for the parts, e.g. "proj" gives #proj-line, #proj-title … */
+  prefix: string;
+  label: string;
+  title: string;
+  description: string;
+}
+
+const { prefix, label, title, description } = Astro.props;
+---
+
+<div class="sec-eyebrow">
+  <div id={`${prefix}-line`} class="sec-line" aria-hidden="true"></div>
+  <p id={`${prefix}-label`} class="sec-label">{label}</p>
+</div>
+
+<h2 id={`${prefix}-title`} class="sec-title">{title}</h2>
+
+<p id={`${prefix}-desc`} class="sec-desc">{description}</p>
