@@ -24,6 +24,7 @@ links:
   live: "https://example.com"                    # the working site
   demo: "https://youtube.com/watch?v=..."        # a video walkthrough
   github: "https://github.com/isurukavi20/repo"  # the code
+  # githubBackend: "https://github.com/..."     # only if the backend is a separate repo
 
 # Optional: big image at the top of the page
 # cover: "./images/project-cover.png"

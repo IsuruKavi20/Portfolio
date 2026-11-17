@@ -1,7 +1,7 @@
 ---
 title: "Project Three"
 summary: "A concept project that will be replaced with a real project later."
-order: 3
+order: 5
 status: "Concept"
 year: "2026"
 role: "Frontend developer"

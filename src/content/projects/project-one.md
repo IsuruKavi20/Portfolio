@@ -1,7 +1,7 @@
 ---
 title: "Project One"
 summary: "A portfolio-ready project card prepared for a future real build."
-order: 1
+order: 3
 status: "In Progress"
 year: "2026"
 role: "Design and development"

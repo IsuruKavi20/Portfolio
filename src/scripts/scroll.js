@@ -11,12 +11,20 @@ import { getTier, TIER_LOW } from "./quality.js";
 
 const MS_PER_SECOND = 1000;
 
+let activeLenis = null;
+
+/** The running Lenis instance, or null (phones, low tier, not started yet). */
+export function getLenis() {
+  return activeLenis;
+}
+
 function startLenis() {
   // A struggling device scrolls best with the browser's own scrolling
   if (getTier() === TIER_LOW) return;
 
   // anchors: nav links such as #about glide to their section
   const lenis = new Lenis({ anchors: true });
+  activeLenis = lenis;
 
   // Tell GSAP's scroll animations every time Lenis moves the page
   lenis.on("scroll", ScrollTrigger.update);

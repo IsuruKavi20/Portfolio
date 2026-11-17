@@ -36,6 +36,8 @@ const projects = defineCollection({
           live: z.url().optional(),
           demo: z.url().optional(),
           github: z.url().optional(),
+          /** second repository, when the backend lives separately */
+          githubBackend: z.url().optional(),
         })
         .default({}),
       cover: image().optional(),

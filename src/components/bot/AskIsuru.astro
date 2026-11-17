@@ -1,0 +1,345 @@
+---
+// ============================================================
+//  "Ask Isuru" — the bot's launcher (a little particle orb), its
+//  greeting bubble and its chat panel. Behaviour: scripts/bot/chat.js.
+// ============================================================
+import { getCollection } from 'astro:content';
+
+const projectIds = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((project) => project.id);
+---
+
+<div id="askIsuru" class="ask" data-state="closed" data-projects={JSON.stringify(projectIds)}>
+
+  <!-- Greeting bubble: appears once per visit, a few seconds in -->
+  <div class="ask-bubble" data-bot-bubble hidden>
+    <button type="button" class="ask-bubble-text" data-bot-bubble-open>
+      Hi! I'm <strong>Ask Isuru</strong>. Want me to show you around?
+    </button>
+    <button type="button" class="ask-bubble-dismiss" data-bot-bubble-dismiss aria-label="Dismiss">×</button>
+  </div>
+
+  <!-- The character: tap to talk -->
+  <button type="button" class="ask-launcher" data-bot-launcher aria-expanded="false" aria-controls="askIsuruPanel" aria-label="Ask Isuru, chat with an AI version of Isuru">
+    <canvas class="ask-orb" data-bot-orb data-size="56" aria-hidden="true"></canvas>
+  </button>
+
+  <!-- Chat panel: floating card on desktop, full screen on phones -->
+  <section id="askIsuruPanel" class="ask-panel" data-bot-panel role="dialog" aria-label="Ask Isuru chat" hidden>
+    <header class="ask-head">
+      <canvas class="ask-head-orb" data-bot-orb data-size="36" aria-hidden="true"></canvas>
+      <div>
+        <p class="ask-name">Ask Isuru</p>
+        <p class="ask-status"><span class="ask-status-dot"></span><span class="ask-status-text"></span></p>
+      </div>
+      <button type="button" class="ask-close" data-bot-close aria-label="Close chat">×</button>
+    </header>
+
+    <ol class="ask-log" data-bot-log aria-live="polite"></ol>
+
+    <form class="ask-form" data-bot-form>
+      <label class="sr-only-focusable" for="askIsuruInput">Message</label>
+      <input id="askIsuruInput" data-bot-input class="ask-input" type="text" maxlength="600" autocomplete="off" placeholder="Ask me anything about my work…" />
+      <button type="submit" class="ask-send" data-bot-send aria-label="Send">→</button>
+    </form>
+
+    <p class="ask-privacy">An AI version of Isuru. Messages are processed by Google Gemini; please don't share sensitive information.</p>
+  </section>
+</div>
+
+<script>
+  import { initAskIsuru } from '../../scripts/bot/chat.js';
+  initAskIsuru();
+</script>
+
+<style>
+  .ask {
+    --ask-gap: calc(1.25rem + env(safe-area-inset-bottom));
+    position: fixed;
+    z-index: 55;
+    right: calc(1.5rem + env(safe-area-inset-right));
+    bottom: var(--ask-gap);
+    /* Hidden until the visitor is on the site */
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+    transition: opacity 0.6s ease, transform 0.6s var(--ease-out);
+  }
+
+  .ask.is-visible {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  /* Phones: the section button lives bottom-right, so the orb sits bottom-left */
+  @media (max-width: 767px) {
+    .ask {
+      right: auto;
+      left: calc(1.25rem + env(safe-area-inset-left));
+    }
+  }
+
+  /* ── The character ── */
+  .ask-launcher {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.7) 70%);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: transform var(--dur) var(--ease-out), border-color var(--dur) ease;
+  }
+
+  .ask-launcher:hover {
+    transform: scale(1.06);
+    border-color: var(--line-strong);
+  }
+
+  .ask-orb {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* ── Greeting bubble ── */
+  .ask-bubble {
+    position: absolute;
+    bottom: calc(100% + 0.75rem);
+    right: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    width: max-content;
+    max-width: min(260px, 80vw);
+    padding: 0.85rem 0.5rem 0.85rem 1rem;
+    border: 1px solid var(--line-strong);
+    background: rgba(10, 10, 10, 0.92);
+    animation: ask-pop 0.5s var(--ease-out);
+  }
+
+  @media (max-width: 767px) {
+    .ask-bubble {
+      right: auto;
+      left: 0;
+    }
+  }
+
+  .ask-bubble[hidden] {
+    display: none;
+  }
+
+  .ask-bubble-text {
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--fg-muted);
+  }
+
+  .ask-bubble-text strong {
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  .ask-bubble-dismiss,
+  .ask-close {
+    min-width: 32px;
+    min-height: 32px;
+    background: none;
+    border: none;
+    color: var(--fg-faint);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  @keyframes ask-pop {
+    from { opacity: 0; transform: translateY(8px) scale(0.96); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ── Panel ── */
+  .ask-panel {
+    position: fixed;
+    right: calc(1.5rem + env(safe-area-inset-right));
+    bottom: calc(var(--ask-gap) + 64px + 0.75rem);
+    display: flex;
+    flex-direction: column;
+    width: 380px;
+    height: min(560px, 70vh);
+    border: 1px solid var(--line-strong);
+    background: rgba(6, 6, 6, 0.96);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    animation: ask-pop 0.4s var(--ease-out);
+  }
+
+  .ask-panel[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .ask-panel {
+      inset: 0;
+      width: auto;
+      height: auto;
+      border: none;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* While the full-screen chat is open, the launcher steps aside */
+    .ask.is-open .ask-launcher {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  .ask-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 0.75rem 0.9rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ask-head-orb {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .ask-head > div {
+    flex: 1;
+  }
+
+  .ask-name {
+    font-size: 0.9375rem;
+    color: var(--fg);
+  }
+
+  .ask-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: var(--fg-faint);
+  }
+
+  .ask-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(120, 220, 150, 0.85);
+  }
+
+  .ask-status-text::after {
+    content: "Online";
+  }
+
+  .ask[data-state="thinking"] .ask-status-text::after {
+    content: "Thinking…";
+  }
+
+  .ask[data-state="acting"] .ask-status-text::after {
+    content: "Showing you…";
+  }
+
+  .ask[data-state="error"] .ask-status-dot {
+    background: rgba(255, 140, 110, 0.85);
+  }
+
+  /* ── Messages ── */
+  .ask-log {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;   /* scrolling the chat never scrolls the page */
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 1rem;
+    list-style: none;
+  }
+
+  .ask-log :global(.bot-msg) {
+    max-width: 85%;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    animation: ask-pop 0.35s var(--ease-out);
+  }
+
+  .ask-log :global(.bot-msg-bot) {
+    align-self: flex-start;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg-muted);
+  }
+
+  .ask-log :global(.bot-msg-visitor) {
+    align-self: flex-end;
+    background: #fff;
+    color: #000;
+  }
+
+  .ask-log :global(.bot-card-link) {
+    color: var(--fg);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+  }
+
+  /* ── Input ── */
+  .ask-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .ask-input {
+    flex: 1;
+    min-height: 44px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--fg);
+    font: inherit;
+    font-size: 16px;   /* under 16px, iPhones zoom in on focus */
+    outline: none;
+  }
+
+  .ask-input:focus {
+    border-color: var(--line-strong);
+  }
+
+  .ask-send {
+    width: 44px;
+    border: none;
+    background: #fff;
+    color: #000;
+    font-size: 1.1rem;
+  }
+
+  .ask-send:disabled,
+  .ask-input:disabled {
+    opacity: 0.5;
+  }
+
+  .ask-privacy {
+    padding: 0 0.9rem 0.75rem;
+    font-size: 0.625rem;
+    line-height: 1.5;
+    color: var(--fg-faint);
+  }
+</style>

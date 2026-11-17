@@ -32,7 +32,7 @@ const { project, number, previous, next } = Astro.props;
 const { data } = project;
 const { Content } = await render(project);
 const techGroups = groupTech(data.tech);
-const hasLinks = Boolean(data.links.live || data.links.demo || data.links.github);
+const hasLinks = Boolean(data.links.live || data.links.demo || data.links.github || data.links.githubBackend);
 const hasPrevNext = previous.id !== project.id;
 ---
 
@@ -75,7 +75,12 @@ const hasPrevNext = previous.id !== project.id;
           )}
           {data.links.github && (
             <a href={data.links.github} target="_blank" rel="noopener noreferrer" class="pp-btn">
-              View code <span aria-hidden="true">↗</span>
+              {data.links.githubBackend ? 'Frontend code' : 'View code'} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {data.links.githubBackend && (
+            <a href={data.links.githubBackend} target="_blank" rel="noopener noreferrer" class="pp-btn">
+              Backend code <span aria-hidden="true">↗</span>
             </a>
           )}
         </div>
