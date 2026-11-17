@@ -50,7 +50,15 @@ export const PROFILE: Profile = {
     "I've worked on full-stack projects with React, Java and Spring Boot, and I enjoy figuring out how systems work from the inside.",
   education: ['BSc (Hons) in Information Technology, University of Moratuwa (2023 – present)'],
   gpa: '',
-  skills: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Tailwind CSS', 'Astro', 'Node.js', 'Java', 'Spring Boot', 'MySQL', 'MongoDB', 'Git', 'Docker'],
+  skills: [
+    'HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Astro', 'Tailwind CSS', 'shadcn/ui', 'GSAP', 'Three.js',
+    'Node.js', 'Java', 'Spring Boot', 'Python', '.NET', 'Prisma', 'Auth.js', 'Inngest (background jobs)', 'REST APIs', 'Gemini API',
+    'PostgreSQL', 'MySQL', 'MongoDB', 'SQL Server', 'Redis (Upstash)', 'Neon',
+    'Git', 'Vitest', 'Playwright', 'Sentry', 'Cloudflare R2', 'Figma', 'Linux',
+    // Deployment
+    'Vercel (auto-deploy from Git, preview and production)', 'Google Cloud Run', 'Docker containers',
+    'GitHub Actions CI/CD', 'Secrets and environment variables', 'Firewall and rate limiting', 'Automated database backups',
+  ],
   currentlyLearning: ['Building AI features into web apps (like this assistant)', 'Advanced web animation'],
   interests: ['Interactive web design and motion', 'Full-stack development', 'Microcontrollers and IoT'],
   lookingFor: 'An internship as a frontend or full-stack developer',

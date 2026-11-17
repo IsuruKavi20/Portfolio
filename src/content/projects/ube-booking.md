@@ -1,7 +1,7 @@
 ---
 title: "UBE Booking Platform"
 summary: "A booking platform with a React and TypeScript frontend and a separate backend service."   # TODO: what is booked, and for whom?
-order: 2
+order: 3
 status: "In Progress"         # TODO: confirm (Live / In Progress)
 year: "2026"                  # TODO: confirm the year
 role: "Team developer"        # TODO: what did you build?
