@@ -20,6 +20,7 @@ const MAX_HISTORY_SENT = 12;
 const MAX_INPUT_CHARS = 600;
 const GREETING_DELAY_MS = 4000;
 const GREETING = "Hi! I'm Ask Isuru, an AI version of Isuru. Want me to show you around?";
+const GREETING_BUBBLE = "Hi! I'm Ask Isuru. Want me to show you around?";
 const OFFLINE_REPLY = "I couldn't reach my brain just now. Please try again in a moment.";
 
 function loadSession() {
@@ -50,6 +51,7 @@ export function initAskIsuru() {
   const sendButton = root.querySelector("[data-bot-send]");
   const closeButton = root.querySelector("[data-bot-close]");
   const bubble = root.querySelector("[data-bot-bubble]");
+  const bubbleText = root.querySelector("[data-bot-bubble-open]");
   const projectIds = JSON.parse(root.dataset.projects || "[]");
 
   const animate = MOTION_ALLOWED && getTier() !== TIER_LOW;
@@ -58,6 +60,7 @@ export function initAskIsuru() {
 
   const session = { messages: [], isOpen: false, greeted: false, ...loadSession() };
   let currentSection = "";
+  let pendingIntro = "";   // project popup text to add when the chat opens from it
   let state = "closed";
 
   function setState(next) {
@@ -104,7 +107,12 @@ export function initAskIsuru() {
     panel.hidden = false;
     launcher.setAttribute("aria-expanded", "true");
     root.classList.add("is-open");
-    if (!log.children.length) addBubble("bot", GREETING);
+    if (pendingIntro) {
+      addBubble("bot", pendingIntro);
+      pendingIntro = "";
+    } else if (!log.children.length) {
+      addBubble("bot", GREETING);
+    }
     setState("open");
     input.focus({ preventScroll: true });
   }
@@ -194,19 +202,41 @@ export function initAskIsuru() {
   });
 
   // ── Appear: after the landing on the home page, straight away elsewhere ──
+  /** Shows the bubble above the orb after a short pause. */
+  function showBubbleLater(text, onShown = () => {}) {
+    setTimeout(() => {
+      if (session.isOpen) return;
+      bubbleText.textContent = text;
+      bubble.hidden = false;
+      onShown();
+      setMood("acting");                      // the orb perks up as it speaks
+      setTimeout(() => state === "closed" && setMood("idle"), 2500);
+    }, GREETING_DELAY_MS);
+  }
+
   function appear() {
     root.classList.add("is-visible");
     session.messages.forEach(({ role, text }) => addBubble(role, text));
-    if (session.isOpen) open();
-    else if (!session.greeted) {
-      // Says hello on each page until the visitor chats or dismisses it
-      setTimeout(() => {
-        if (session.isOpen || session.greeted) return;
-        bubble.hidden = false;
-        setMood("acting");                      // the orb perks up as it speaks
-        setTimeout(() => state === "closed" && setMood("idle"), 2500);
-      }, GREETING_DELAY_MS);
+    if (session.isOpen) {
+      open();
+      return;
     }
+
+    // On a project page: a popup about that project, once per project per visit
+    const page = readPageContext(currentSection);
+    const projectTitle = document.querySelector(".pp-title")?.textContent?.trim();
+    const seenTips = session.projectTips ?? [];
+    if (page.page === "project" && projectTitle && !seenTips.includes(page.projectId)) {
+      pendingIntro = `Ask me anything about ${projectTitle}: the problem it solves, how I built it, or the tech behind it.`;
+      showBubbleLater(`Curious about ${projectTitle}? Ask me how I built it.`, () => {
+        session.projectTips = [...seenTips, page.projectId];
+        saveSession(session);
+      });
+      return;
+    }
+
+    // Elsewhere: says hello until the visitor chats or dismisses it
+    if (!session.greeted) showBubbleLater(GREETING_BUBBLE);
   }
 
   const landingIsOver =

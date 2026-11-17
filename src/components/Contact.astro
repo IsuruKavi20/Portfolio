@@ -27,22 +27,28 @@ import SectionHeader from './SectionHeader.astro';
         <div class="form-row">
           <div class="form-group">
             <label for="cf-name" class="form-label">Your Name</label>
-            <input id="cf-name" name="from_name" type="text" class="form-input" placeholder="Isuru Premasiri" required />
+            <input id="cf-name" name="name" type="text" class="form-input" placeholder="Your name" maxlength="80" autocomplete="name" required />
           </div>
           <div class="form-group">
             <label for="cf-email" class="form-label">Your Email</label>
-            <input id="cf-email" name="from_email" type="email" class="form-input" placeholder="you@example.com" required />
+            <input id="cf-email" name="email" type="email" class="form-input" placeholder="you@example.com" maxlength="120" autocomplete="email" required />
           </div>
         </div>
 
         <div class="form-group">
           <label for="cf-subject" class="form-label">Subject</label>
-          <input id="cf-subject" name="subject" type="text" class="form-input" placeholder="Internship opportunity / Collaboration" required />
+          <input id="cf-subject" name="subject" type="text" class="form-input" placeholder="Internship opportunity / Collaboration" maxlength="120" />
         </div>
 
         <div class="form-group">
           <label for="cf-message" class="form-label">Message</label>
-          <textarea id="cf-message" name="message" rows="6" class="form-input form-textarea" placeholder="Your message here…" required></textarea>
+          <textarea id="cf-message" name="message" rows="6" class="form-input form-textarea" placeholder="Your message here…" minlength="10" maxlength="2000" required></textarea>
+        </div>
+
+        <!-- Trap for spam bots: hidden from people, so it stays empty. Bots fill it in. -->
+        <div class="form-trap" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
         </div>
 
         <button type="submit" id="contact-submit" class="submit-btn">
@@ -53,7 +59,7 @@ import SectionHeader from './SectionHeader.astro';
         </button>
 
         <!-- Status message -->
-        <p id="form-status" class="form-status"></p>
+        <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
 
       </form>
 
@@ -99,28 +105,59 @@ import SectionHeader from './SectionHeader.astro';
 </section>
 
 <script>
-// ── Contact form (for now) ─────────────────────
-// Until the server email service is chosen and set up, sending opens the
-// visitor's own email app with the message filled in. No third-party
-// script and no key in the browser.
-const TO = 'isurukpremasiri2001@gmail.com';
-const MAX_FIELD = 2000;
-
+// ── Contact form ───────────────────────────────
+// Sends the message to /api/contact, which emails it to Isuru.
+// The browser only checks for friendliness; the server checks everything again.
 const form = document.getElementById('contact-form') as HTMLFormElement | null;
 const status = document.getElementById('form-status');
+const submitButton = document.getElementById('contact-submit') as HTMLButtonElement | null;
+const submitText = document.getElementById('submit-text');
+const openedAt = Date.now();   // how long the form was open (bots are instant)
 
-form?.addEventListener('submit', (event) => {
+function showStatus(message: string, kind: 'success' | 'error') {
+  if (!status) return;
+  status.textContent = message;
+  status.className = `form-status status-${kind}`;
+}
+
+function setSending(isSending: boolean) {
+  if (submitButton) submitButton.disabled = isSending;
+  if (submitText) submitText.textContent = isSending ? 'Sending…' : 'Send Message';
+}
+
+form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!form || !form.reportValidity()) return;
 
-  const field = (name: string) => String(new FormData(form).get(name) ?? '').trim().slice(0, MAX_FIELD);
-  const subject = field('subject') || 'Hello from your portfolio';
-  const body = `${field('message')}\n\n— ${field('from_name')} (${field('from_email')})`;
+  const data = new FormData(form);
+  const field = (name: string) => String(data.get(name) ?? '').trim();
 
-  window.location.href = `mailto:${TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  if (status) {
-    status.textContent = 'Your email app should open with the message ready to send.';
-    status.className = 'form-status status-success';
+  setSending(true);
+  showStatus('', 'success');
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: field('name'),
+        email: field('email'),
+        subject: field('subject'),
+        message: field('message'),
+        website: field('website'),
+        elapsedMs: Date.now() - openedAt,
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(typeof result.error === 'string' ? result.error : '');
+    showStatus(result.message ?? 'Thanks! Your message is on its way.', 'success');
+    form.reset();
+  } catch (error) {
+    const message = error instanceof Error && error.message
+      ? error.message
+      : "Sorry, the message didn't go through. Please email me directly.";
+    showStatus(message, 'error');
+  } finally {
+    setSending(false);
   }
 });
 </script>
@@ -163,6 +200,15 @@ form?.addEventListener('submit', (event) => {
 
 @media (max-width: 640px) {
   .form-row { grid-template-columns: 1fr; }
+}
+
+/* Spam trap: moved off screen (not display:none, which some bots skip) */
+.form-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 .form-group {
@@ -243,8 +289,35 @@ form?.addEventListener('submit', (event) => {
   min-height: 20px;
 }
 
-.status-success { color: rgba(120, 220, 150, 0.85); }
-.status-error   { color: rgba(255, 120, 100, 0.85); }
+/* Monochrome like the rest of the site: a short line marks the message,
+   success is bright white, an error is a softer grey with a cross */
+.status-success,
+.status-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.status-success { color: rgba(255, 255, 255, 0.9); }
+.status-error   { color: rgba(255, 255, 255, 0.6); }
+
+.status-success::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: #fff;
+}
+
+.status-error::before {
+  content: "×";
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.form-status:empty::before {
+  content: none;
+}
 
 /* ── Info panel ── */
 .contact-info {

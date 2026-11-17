@@ -1,7 +1,7 @@
 // @ts-check
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
 import { NOSCRIPT_CSS } from './src/layouts/inline-css.mjs';
@@ -37,7 +37,7 @@ export default defineConfig({
         'frame-src https://my.spline.design',   // the landing orb
         "object-src 'none'",
         "base-uri 'self'",
-        "form-action 'self' mailto:",
+        "form-action 'self'",
         "frame-ancestors 'none'",                // no other site may embed this one
         'upgrade-insecure-requests',
       ],
@@ -45,6 +45,18 @@ export default defineConfig({
       styleDirective: { hashes: [sha256(NOSCRIPT_CSS)] },
     },
   } : {},
+
+  // Server settings, read when the server runs (never baked into the build
+  // and never sent to the browser). Values: .env locally, Vercel settings live.
+  env: {
+    schema: {
+      GEMINI_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      GEMINI_MODEL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      CHAT_ENABLED: envField.string({ context: 'server', access: 'secret', optional: true }),
+      RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      CONTACT_TO: envField.string({ context: 'server', access: 'secret', optional: true }),
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],

@@ -12,16 +12,18 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { chatRequestSchema } from '../../lib/bot-schema';
 import { validateActions } from '../../lib/bot-actions';
-import { buildKnowledge, type ProjectFacts } from '../../lib/knowledge';
+import { buildKnowledge, buildVoice, type ProjectFacts } from '../../lib/knowledge';
 import { PROFILE } from '../../data/profile';
 import { createRateLimiter, isChatEnabled, isJson, isSameOrigin, MAX_BODY_BYTES } from '../../server/guard';
 import { demoProvider, type AiProvider } from '../../server/ai-provider';
 import { createGeminiProvider } from '../../server/gemini-provider';
 import { cleanReply } from '../../server/reply-filter';
+import { CHAT_ENABLED, GEMINI_API_KEY, GEMINI_MODEL } from 'astro:env/server';
 
 export const prerender = false;
 
 const MINUTE = 60_000;
+const MAX_WRITE_UP_CHARS = 2500;
 const DAY = 24 * 60 * MINUTE;
 
 // Per visitor: a burst limit and a daily limit. Globally: a daily ceiling
@@ -57,18 +59,19 @@ async function loadProjects() {
     hasCode: Boolean(data.links.github),
     isPlaceholder: data.placeholder,
   }));
-  return { ids: entries.map((entry) => entry.id), facts };
+  // The full write-up of each project, used only for the project being viewed
+  const writeUps = new Map(entries.map((entry) => [entry.id, entry.data.placeholder ? '' : (entry.body ?? '')]));
+  return { ids: entries.map((entry) => entry.id), facts, writeUps };
 }
 
 /** Gemini when a key is set on the server; otherwise the demo answers. */
 function chooseProvider(knowledge: string): AiProvider {
-  const apiKey = import.meta.env.GEMINI_API_KEY;
-  if (!apiKey) return demoProvider;
-  return createGeminiProvider({ apiKey, model: import.meta.env.GEMINI_MODEL, knowledge });
+  if (!GEMINI_API_KEY) return demoProvider;
+  return createGeminiProvider({ apiKey: GEMINI_API_KEY, model: GEMINI_MODEL, knowledge, voice: buildVoice(PROFILE) });
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  if (!isChatEnabled(import.meta.env.CHAT_ENABLED)) {
+  if (!isChatEnabled(CHAT_ENABLED)) {
     return reply(503, { error: 'Ask Isuru is resting right now. Please use the contact form.' });
   }
   if (!isSameOrigin(request.headers.get('origin'), request.url) || !isJson(request.headers.get('content-type'))) {
@@ -104,11 +107,19 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   try {
     const projects = await loadProjects();
-    const provider = chooseProvider(buildKnowledge(PROFILE, projects.facts));
+    const { context } = parsed.data;
+    const writeUp = context.page === 'project' && context.projectId ? projects.writeUps.get(context.projectId) : '';
+    const currentProject = writeUp
+      ? `\n\nCURRENT PROJECT (id: ${context.projectId}), the visitor is looking at it:\n${writeUp.slice(0, MAX_WRITE_UP_CHARS)}`
+      : '';
+    const provider = chooseProvider(buildKnowledge(PROFILE, projects.facts) + currentProject);
     const answer = await provider.generateReply({ ...parsed.data, projectIds: projects.ids });
     return reply(200, {
       reply: cleanReply(answer.text),
-      actions: validateActions(answer.actions, projects.ids),
+      // Opening the page the visitor is already on would only reload it
+      actions: validateActions(answer.actions, projects.ids).filter(
+        (action) => !(action.type === 'open_project' && action.id === context.projectId),
+      ),
     });
   } catch (error) {
     // Server log only, and only the error type: never the request or any key

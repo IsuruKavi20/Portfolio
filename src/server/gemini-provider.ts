@@ -95,9 +95,9 @@ function isRetryable(error: unknown): boolean {
   return typeof status === 'number' && RETRY_STATUSES.has(status);
 }
 
-export function createGeminiProvider({ apiKey, model, knowledge }: { apiKey: string; model?: string; knowledge: string }): AiProvider {
+export function createGeminiProvider({ apiKey, model, knowledge, voice }: { apiKey: string; model?: string; knowledge: string; voice?: string }): AiProvider {
   const client = new GoogleGenAI({ apiKey });
-  const systemInstruction = buildSystemInstruction(knowledge);
+  const systemInstruction = buildSystemInstruction(knowledge, voice);
 
   /** One request to Gemini; tried once more if Google is briefly busy. */
   async function ask(contents: Content[], tools: FunctionDeclaration[], mode: FunctionCallingConfigMode) {
