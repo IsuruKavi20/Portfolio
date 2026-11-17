@@ -33,9 +33,14 @@ function startLenis() {
  * is active its stylesheet stops iframes from receiving the mouse, and that
  * would freeze the Spline orb's hover effect.
  */
-export function initSmoothScroll() {
+export function initSmoothScroll({ waitForLanding = true } = {}) {
   const hasMouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   if (!hasMouse) return;
 
+  // Pages without a landing screen (project pages) start straight away
+  if (!waitForLanding) {
+    startLenis();
+    return;
+  }
   window.addEventListener("landing:done", startLenis, { once: true });
 }

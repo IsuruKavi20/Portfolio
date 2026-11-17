@@ -1,5 +1,17 @@
 ---
-const { number, title, description, tech, status, github, live } = Astro.props;
+import { TECH, type TechId } from '../data/tech';
+
+interface Props {
+  id: string;
+  number: string;
+  title: string;
+  summary: string;
+  status: string;
+  tech: TechId[];
+  links: { live?: string; demo?: string; github?: string };
+}
+
+const { id, number, title, summary, status, tech, links } = Astro.props;
 ---
 
 <article class="project-card">
@@ -17,34 +29,38 @@ const { number, title, description, tech, status, github, live } = Astro.props;
       <span class="card-tag">
         {status}
       </span>
-  </div>
+    </div>
 
     <h3 class="mt-10 text-2xl font-light text-white">
-      {title}
+      <!-- The whole card opens the project page; this link stretches over it -->
+      <a href={`/projects/${id}`} class="card-main-link">{title}</a>
     </h3>
 
-    <p class="mt-6 text-sm  text-gray-400 leading-7">
-      {description}
+    <p class="mt-6 text-sm text-gray-400 leading-7">
+      {summary}
     </p>
 
     <div class="mt-6 flex flex-wrap gap-2">
-    {tech.map((item) => (
-      <span class="card-tag">{item}</span>      
-    ))}
-  </div>
+      {tech.map((techId) => (
+        <span class="card-tag">{TECH[techId].name}</span>
+      ))}
+    </div>
 
   </div>
 
-  <div class="mt-10 flex justify-between border-t border-white/10 pt-6">
+  <div class="card-spacer" aria-hidden="true"></div>
 
-    <a href={github} target="_blank" rel="noopener noreferrer" class="text-xs uppercase tracking-widest text-gray-500 hover:text-white">
-      GitHub
-    </a>
+  <div class="card-footer">
+    <span class="card-open" aria-hidden="true">View project →</span>
 
-    <a href={live} target="_blank" rel="noopener noreferrer" class="text-xs uppercase tracking-widest text-gray-500 hover:text-white">
-      Live
-    </a>
-
+    <div class="card-quick-links">
+      {links.github && (
+        <a href={links.github} target="_blank" rel="noopener noreferrer" class="card-quick-link">GitHub</a>
+      )}
+      {links.live && (
+        <a href={links.live} target="_blank" rel="noopener noreferrer" class="card-quick-link">Live</a>
+      )}
+    </div>
   </div>
 
 </article>
@@ -56,6 +72,7 @@ const { number, title, description, tech, status, github, live } = Astro.props;
   display: flex;
   flex-direction: column;
   min-height: 360px;
+  height: 100%;
   padding: 32px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -85,26 +102,79 @@ const { number, title, description, tech, status, github, live } = Astro.props;
   transform: scaleX(1);
 }
 
+/* Stretched link: an invisible layer over the whole card, so a click
+   anywhere opens the project, while the small links below stay on top */
+.card-main-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
 
+.card-main-link:focus-visible {
+  outline: none;
+}
 
-
-
-
+.project-card:has(.card-main-link:focus-visible) {
+  outline: 1px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 4px;
+}
 
 .card-tag {
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 4px 12px;
   border-radius: 2px;
   font-family: 'Inter', sans-serif;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 .project-card:hover .card-tag {
-  color: rgba(255, 255, 255, 0.55);
-  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
+/* Keeps the footer away from the content above, even on short cards */
+.card-spacer {
+  flex: 1;
+  min-height: 2.5rem;
+}
+
+.card-footer {
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.card-open {
+  color: rgba(255, 255, 255, 0.75);
+  transition: transform 0.35s ease;
+}
+.project-card:hover .card-open {
+  transform: translateX(4px);
+}
+
+.card-quick-links {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.card-quick-link {
+  position: relative;
+  z-index: 2;   /* above the stretched card link */
+  padding: 8px 0;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s ease;
+}
+.card-quick-link:hover {
+  color: #fff;
+}
 
 </style>

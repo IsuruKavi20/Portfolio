@@ -1,0 +1,578 @@
+---
+// ============================================================
+//  /projects/<name> — one page per Markdown file in
+//  src/content/projects/. Built at build time: no server needed.
+// ============================================================
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { groupTech, initials } from '../../data/tech';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project, index) => ({
+    params: { id: project.id },
+    props: {
+      project,
+      number: String(index + 1).padStart(2, '0'),
+      previous: projects[index - 1] ?? projects[projects.length - 1],
+      next: projects[index + 1] ?? projects[0],
+    },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  number: string;
+  previous: CollectionEntry<'projects'>;
+  next: CollectionEntry<'projects'>;
+}
+
+const { project, number, previous, next } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const techGroups = groupTech(data.tech);
+const hasLinks = Boolean(data.links.live || data.links.demo || data.links.github);
+const hasPrevNext = previous.id !== project.id;
+---
+
+<Base title={`${data.title} — Isuru K. Premasiri`} description={data.summary}>
+
+  <nav class="pp-topbar container-x" aria-label="Project">
+    <a href="/#projects" class="pp-back line-link">← All projects</a>
+    <span class="pp-count">{number}</span>
+  </nav>
+
+  <article class="pp">
+
+    <!-- ── Header ── -->
+    <header class="pp-header container-x">
+      <div class="pp-eyebrow" data-reveal>
+        <span class="sec-line" aria-hidden="true"></span>
+        <span class="chip">{data.status}</span>
+      </div>
+
+      <h1 class="pp-title" data-reveal>{data.title}</h1>
+      <p class="pp-summary" data-reveal>{data.summary}</p>
+
+      <dl class="pp-meta" data-reveal>
+        <div><dt>Year</dt><dd>{data.year}</dd></div>
+        <div><dt>Role</dt><dd>{data.role}</dd></div>
+        <div><dt>Status</dt><dd>{data.status}</dd></div>
+      </dl>
+
+      {hasLinks && (
+        <div class="pp-links" data-reveal>
+          {data.links.live && (
+            <a href={data.links.live} target="_blank" rel="noopener noreferrer" class="pp-btn pp-btn-primary">
+              Visit live site <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {data.links.demo && (
+            <a href={data.links.demo} target="_blank" rel="noopener noreferrer" class="pp-btn">
+              Watch demo <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {data.links.github && (
+            <a href={data.links.github} target="_blank" rel="noopener noreferrer" class="pp-btn">
+              View code <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      )}
+
+      {data.placeholder && (
+        <p class="pp-notice" role="note">Example content. The real project details are coming soon.</p>
+      )}
+    </header>
+
+    <!-- ── Cover: the photo, or a typographic panel when there is none ── -->
+    <div class="pp-cover container-x" data-reveal>
+      {data.cover ? (
+        <Image
+          src={data.cover}
+          alt={data.coverAlt ?? `${data.title} preview`}
+          widths={[640, 1024, 1600]}
+          sizes="(min-width: 1280px) 1200px, 100vw"
+          loading="eager"
+          class="pp-cover-img"
+        />
+      ) : (
+        <div class="pp-cover-blank" aria-hidden="true">
+          <span class="pp-cover-number">{number}</span>
+        </div>
+      )}
+    </div>
+
+    <!-- ── Write-up ── -->
+    <section class="pp-section container-x" aria-labelledby="pp-overview">
+      <h2 id="pp-overview" class="pp-section-label">Overview</h2>
+      <div class="pp-body" data-reveal>
+        <Content />
+
+        {data.highlights.length > 0 && (
+          <ul class="pp-highlights">
+            {data.highlights.map((point) => <li>{point}</li>)}
+          </ul>
+        )}
+      </div>
+    </section>
+
+    <!-- ── Technologies ── -->
+    <section class="pp-section container-x" aria-labelledby="pp-tech">
+      <h2 id="pp-tech" class="pp-section-label">Built with</h2>
+      <div class="pp-tech-groups">
+        {techGroups.map((group) => (
+          <div class="pp-tech-group" data-reveal>
+            <p class="pp-tech-category">{group.category}</p>
+            <ul class="pp-tech-grid">
+              {group.items.map((tech) => (
+                <li class="pp-tech-tile">
+                  {tech.logo ? (
+                    <img src={tech.logo} alt="" width="28" height="28" class="pp-tech-logo" loading="lazy" />
+                  ) : (
+                    <span class="pp-tech-initials" aria-hidden="true">{initials(tech.name)}</span>
+                  )}
+                  <span class="pp-tech-name">{tech.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── Gallery (only when there are screenshots) ── -->
+    {data.gallery.length > 0 && (
+      <section class="pp-section pp-gallery-section" aria-labelledby="pp-gallery">
+        <h2 id="pp-gallery" class="pp-section-label container-x">Gallery</h2>
+        <div id="pp-gallery-row" data-snap-row class="pp-gallery snap-row">
+          {data.gallery.map((shot) => (
+            <figure class="pp-shot">
+              <Image src={shot.src} alt={shot.alt} widths={[480, 960, 1440]} sizes="(min-width: 768px) 50vw, 85vw" class="pp-shot-img" />
+              {shot.caption && <figcaption class="pp-shot-caption">{shot.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+        <p class="snap-count" data-snap-count="pp-gallery-row" aria-hidden="true">
+          <span data-snap-current>01</span>
+          <span class="snap-count-track"><span class="snap-count-fill"></span></span>
+          <span data-snap-total>{String(data.gallery.length).padStart(2, '0')}</span>
+        </p>
+      </section>
+    )}
+
+    <!-- ── Previous / next ── -->
+    {hasPrevNext && (
+      <nav class="pp-pager container-x" aria-label="More projects">
+        <a href={`/projects/${previous.id}`} class="pp-pager-link">
+          <span class="pp-pager-dir">← Previous</span>
+          <span class="pp-pager-title">{previous.data.title}</span>
+        </a>
+        <a href={`/projects/${next.id}`} class="pp-pager-link pp-pager-next">
+          <span class="pp-pager-dir">Next →</span>
+          <span class="pp-pager-title">{next.data.title}</span>
+        </a>
+      </nav>
+    )}
+
+  </article>
+
+</Base>
+
+<script>
+  import '../../scripts/project-page.js';
+</script>
+
+<style>
+  .pp-topbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: calc(1.25rem + env(safe-area-inset-top)) 1.25rem;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 50%, transparent);
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .pp-back {
+    padding-block: 8px;
+  }
+
+  .pp-count {
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Header ── */
+  .pp-header {
+    padding-top: clamp(3rem, 10vw, 7rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .pp-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+
+  /* The shared line starts hidden for the home page's draw-in animation;
+     here it simply shows (its block already fades in) */
+  .pp-eyebrow .sec-line {
+    transform: none;
+  }
+
+  .pp-title {
+    font-size: clamp(2.75rem, 11vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .pp-summary {
+    margin-top: 1.5rem;
+    max-width: 36rem;
+    font-size: clamp(1rem, 2.4vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--fg-muted);
+  }
+
+  .pp-meta {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .pp-meta dt {
+    font-size: 0.625rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin-bottom: 0.5rem;
+  }
+
+  .pp-meta dd {
+    font-size: 0.875rem;
+    color: var(--fg-strong);
+  }
+
+  .pp-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+
+  .pp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 48px;
+    padding: 0 1.5rem;
+    border: 1px solid var(--line-strong);
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-strong);
+    transition: background var(--dur) ease, color var(--dur) ease, border-color var(--dur) ease;
+  }
+
+  .pp-btn:hover {
+    border-color: #fff;
+  }
+
+  .pp-btn-primary {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+
+  .pp-btn-primary:hover {
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  .pp-notice {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--fg-faint);
+  }
+
+  /* ── Cover ── */
+  .pp-cover-img,
+  .pp-cover-blank {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line);
+  }
+
+  .pp-cover-img {
+    height: auto;
+    object-fit: cover;
+  }
+
+  .pp-cover-blank {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.06), transparent 60%),
+      var(--surface);
+  }
+
+  .pp-cover-number {
+    font-size: clamp(8rem, 40vw, 26rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+  }
+
+  /* ── Sections ── */
+  .pp-section {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: clamp(3.5rem, 10vw, 7rem) 0;
+  }
+
+  @media (min-width: 900px) {
+    .pp-section:not(.pp-gallery-section) {
+      grid-template-columns: 14rem 1fr;
+      gap: 3rem;
+    }
+  }
+
+  .pp-section-label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-weight: 400;
+  }
+
+  /* Markdown content */
+  .pp-body {
+    max-width: 42rem;
+    color: var(--fg-muted);
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
+  .pp-body :global(h2) {
+    margin: 2.5rem 0 0.75rem;
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--fg);
+  }
+
+  .pp-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .pp-body :global(p + p) {
+    margin-top: 1rem;
+  }
+
+  .pp-body :global(a) {
+    color: var(--fg);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .pp-highlights {
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .pp-highlights li {
+    position: relative;
+    padding: 1rem 0 1rem 1.75rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg-strong);
+  }
+
+  .pp-highlights li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.75rem;
+    width: 0.9rem;
+    height: 1px;
+    background: var(--fg-faint);
+  }
+
+  /* ── Technologies ── */
+  .pp-tech-groups {
+    display: grid;
+    gap: 2.25rem;
+  }
+
+  .pp-tech-category {
+    margin-bottom: 0.9rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  .pp-tech-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  @media (min-width: 640px) {
+    .pp-tech-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .pp-tech-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    padding: 1.4rem 1.25rem;
+    background: var(--bg);
+    transition: background var(--dur) ease;
+  }
+
+  /* Logos are white; they sit quietly and brighten on hover */
+  .pp-tech-logo {
+    width: 28px;
+    height: 28px;
+    opacity: 0.55;
+    transition: opacity var(--dur) ease, transform var(--dur) var(--ease-out);
+  }
+
+  .pp-tech-initials {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--line-strong);
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+  }
+
+  .pp-tech-name {
+    font-size: 0.875rem;
+    color: var(--fg-muted);
+  }
+
+  @media (hover: hover) {
+    .pp-tech-tile:hover {
+      background: var(--surface-hover);
+    }
+
+    .pp-tech-tile:hover .pp-tech-logo {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .pp-tech-tile:hover .pp-tech-name {
+      color: var(--fg);
+    }
+  }
+
+  /* ── Gallery ── */
+  .pp-gallery-section {
+    gap: 1.5rem;
+  }
+
+  .pp-gallery {
+    width: 100%;
+    max-width: var(--page-max);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 768px) {
+    .pp-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      padding-inline: var(--gutter);
+    }
+  }
+
+  .pp-shot-img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+  }
+
+  .pp-shot-caption {
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--fg-faint);
+  }
+
+  .pp-gallery-section .snap-count {
+    padding-inline: var(--gutter);
+  }
+
+  /* ── Previous / next ── */
+  .pp-pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: clamp(4rem, 12vw, 8rem);
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+  }
+
+  .pp-pager-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1.75rem;
+  }
+
+  .pp-pager-next {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .pp-pager-dir {
+    font-size: 0.625rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  .pp-pager-title {
+    font-size: clamp(1.1rem, 3.5vw, 2rem);
+    font-weight: 300;
+    color: var(--fg-muted);
+    transition: color var(--dur) ease;
+  }
+
+  .pp-pager-link:hover .pp-pager-title {
+    color: var(--fg);
+  }
+
+  @media (max-width: 480px) {
+    .pp-meta {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .pp-links .pp-btn {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
+  }
+</style>

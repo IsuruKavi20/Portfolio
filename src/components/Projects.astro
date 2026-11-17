@@ -1,7 +1,9 @@
 ---
 import SectionHeader from './SectionHeader.astro';
-import { projects } from "../data/projects";
+import { getCollection } from "astro:content";
 import ProjectCard from "./ProjectCard.astro";
+
+const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <section id="projects" class="relative bg-black text-white py-24 md:py-40 overflow-hidden">
@@ -24,7 +26,15 @@ import ProjectCard from "./ProjectCard.astro";
     <div id="projects-row" data-snap-row class="proj-grid snap-row">
       {projects.map((project, i) => (
         <div class="proj-card-wrap" data-index={i}>
-          <ProjectCard {...project} />
+          <ProjectCard
+            id={project.id}
+            number={String(i + 1).padStart(2, "0")}
+            title={project.data.title}
+            summary={project.data.summary}
+            status={project.data.status}
+            tech={project.data.tech}
+            links={project.data.links}
+          />
         </div>
       ))}
     </div>
