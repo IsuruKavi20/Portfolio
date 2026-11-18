@@ -54,3 +54,9 @@ describe('validateActions', () => {
     expect(validateActions({ type: 'offer_cv' }, projects)).toEqual([]);
   });
 });
+
+describe('education highlight', () => {
+  test('allows highlighting the education cards', () => {
+    expect(validateAction({ type: 'highlight', target: 'education-cards' }, [])).toEqual({ type: 'highlight', target: 'education-cards' });
+  });
+});

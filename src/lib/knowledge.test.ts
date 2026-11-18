@@ -9,6 +9,7 @@ const profile: Profile = {
   headline: 'Developer',
   location: 'Sri Lanka',
   about: 'Builds things.',
+  strengths: ['UI design'],
   education: ['Some university'],
   gpa: '',
   skills: ['React'],
@@ -69,5 +70,11 @@ describe('buildVoice', () => {
 
   test('leaves out the phrases line when there are none', () => {
     expect(buildVoice({ ...profile, voice: { ...profile.voice, phrases: [] } })).not.toContain('Phrases');
+  });
+});
+
+describe('strengths', () => {
+  test('lists my strengths in the facts sheet', () => {
+    expect(buildKnowledge(profile, [])).toContain('Strengths: UI design');
   });
 });

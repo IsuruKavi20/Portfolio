@@ -11,11 +11,14 @@ export const EMPTY_REPLY = "Sorry, I lost my words for a second. Could you ask t
 
 const URL_PATTERN = /\b(?:https?:\/\/|www\.)\S+/gi;
 const MARKDOWN_PATTERN = /[*_`#>]+/g;
+/** Long dashes (— or –) with their spaces; Isuru writes commas instead. */
+const LONG_DASH_PATTERN = /\s*[—–]\s*/g;
 
 export function cleanReply(text: string): string {
   const cleaned = text
     .replace(URL_PATTERN, '(link on the site)')
     .replace(MARKDOWN_PATTERN, '')
+    .replace(LONG_DASH_PATTERN, ', ')
     .replace(/\s+\n/g, '\n')
     .trim();
 

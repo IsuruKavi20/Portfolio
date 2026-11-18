@@ -21,6 +21,9 @@ const MAX_INPUT_CHARS = 600;
 const GREETING_DELAY_MS = 4000;
 const GREETING = "Hi! I'm Ask Isuru, an AI version of Isuru. Want me to show you around?";
 const GREETING_BUBBLE = "Hi! I'm Ask Isuru. Want me to show you around?";
+/** Starter questions: tap one instead of typing (shown until the first message). */
+const SUGGESTIONS_HOME = ["What do you build?", "Show me your projects", "What's your strongest skill?", "Are you open to internships?"];
+const SUGGESTIONS_PROJECT = ["How did you build this?", "What was your part?", "What did you learn?"];
 const OFFLINE_REPLY = "I couldn't reach my brain just now. Please try again in a moment.";
 
 function loadSession() {
@@ -52,6 +55,7 @@ export function initAskIsuru() {
   const closeButton = root.querySelector("[data-bot-close]");
   const bubble = root.querySelector("[data-bot-bubble]");
   const bubbleText = root.querySelector("[data-bot-bubble-open]");
+  const suggest = root.querySelector("[data-bot-suggest]");
   const projectIds = JSON.parse(root.dataset.projects || "[]");
 
   const animate = MOTION_ALLOWED && getTier() !== TIER_LOW;
@@ -90,6 +94,31 @@ export function initAskIsuru() {
     log.scrollTop = log.scrollHeight;
   }
 
+  // Suggestion chips: built with textContent only, hidden once the visitor talks
+  function showSuggestions() {
+    const visitorHasTalked = session.messages.some((message) => message.role === "visitor");
+    if (!suggest || visitorHasTalked) return hideSuggestions();
+    const onProject = readPageContext(currentSection).page === "project";
+    const questions = onProject ? SUGGESTIONS_PROJECT : SUGGESTIONS_HOME;
+    suggest.replaceChildren(
+      ...questions.map((question) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.textContent = question;
+        chip.addEventListener("click", () => {
+          if (state === "thinking" || state === "acting") return;
+          send(question);
+        });
+        return chip;
+      }),
+    );
+    suggest.hidden = false;
+  }
+
+  function hideSuggestions() {
+    if (suggest) suggest.hidden = true;
+  }
+
   function remember(role, text) {
     session.messages = [...session.messages, { role, text }].slice(-MAX_HISTORY_SENT * 2);
     saveSession(session);
@@ -110,6 +139,7 @@ export function initAskIsuru() {
       addBubble("bot", GREETING);
     }
     setState("open");
+    showSuggestions();
     input.focus({ preventScroll: true });
   }
 
@@ -128,6 +158,7 @@ export function initAskIsuru() {
   async function send(text) {
     // Once the visitor has talked to the bot, it no longer needs to say hello
     session.greeted = true;
+    hideSuggestions();
     addBubble("visitor", text);
     remember("visitor", text);
     setState("thinking");

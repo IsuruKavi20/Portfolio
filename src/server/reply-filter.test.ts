@@ -26,3 +26,9 @@ describe('cleanReply', () => {
     expect(result.endsWith('.')).toBe(true);
   });
 });
+
+describe('long dashes', () => {
+  test('turns long dashes into commas', () => {
+    expect(cleanReply('I built it — with React')).toBe('I built it, with React');
+  });
+});

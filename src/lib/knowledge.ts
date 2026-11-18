@@ -54,6 +54,7 @@ export function buildKnowledge(profile: Profile, projects: ProjectFacts[]): stri
     `Headline: ${profile.headline}`,
     `Based in: ${profile.location} (never give a more exact location)`,
     `About: ${profile.about}`,
+    `Strengths: ${listOrUnknown(profile.strengths)}`,
     `Education: ${listOrUnknown(profile.education)}`,
     `GPA: ${textOrUnknown(profile.gpa)}`,
     `Skills: ${listOrUnknown(profile.skills)}`,

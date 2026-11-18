@@ -18,6 +18,7 @@ export const HIGHLIGHT_TARGETS = {
   'social-links': '#hero-socials',
   'skills-grid': '#skills-row',
   'project-cards': '#projects-row',
+  'education-cards': '#edu-card',
   'project-links': '.pp-links',
   'project-tech': '.pp-tech-groups',
   'contact-form': '#contact-form',

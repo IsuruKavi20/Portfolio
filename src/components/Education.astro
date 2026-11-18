@@ -25,7 +25,7 @@ import SectionHeader from './SectionHeader.astro';
         <div class="edu-bar"></div>
         <div class="edu-card-inner">
           <div class="edu-left">
-            <p class="edu-year">2023 — Present</p>
+            <p class="edu-year">2023 - Present</p>
             <h3 class="edu-institution">University of Moratuwa</h3>
             <p class="edu-degree">BSc (Hons) in Information Technology · Faculty of IT</p>
             <div class="edu-divider"></div>
@@ -51,7 +51,7 @@ import SectionHeader from './SectionHeader.astro';
         <div class="edu-bar"></div>
         <div class="edu-card-inner">
           <div class="edu-left">
-            <p class="edu-year">2013 — 2020</p>
+            <p class="edu-year">2013 - 2020</p>
             <h3 class="edu-institution">St. Mary's College, Kegalle</h3>
             <p class="edu-degree">G.C.E. Advanced Level &amp; Ordinary Level</p>
             <div class="edu-divider"></div>
@@ -141,9 +141,10 @@ import SectionHeader from './SectionHeader.astro';
 }
 
 /* Left */
+/* Fixed width on desktop so long degree names wrap instead of crossing the divider */
 .edu-left {
   flex-shrink: 0;
-  min-width: 220px;
+  width: 260px;
 }
 
 .edu-year {
@@ -167,6 +168,7 @@ import SectionHeader from './SectionHeader.astro';
 
 .edu-degree {
   font-size: 10px;
+  line-height: 1.8;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
@@ -181,7 +183,7 @@ import SectionHeader from './SectionHeader.astro';
   .edu-divider {
     display: block;
     position: absolute;
-    left: calc(220px + 48px + 40px);
+    left: calc(48px + 260px + 40px); /* card padding + left column + half the gap */
     top: 48px;
     bottom: 48px;
     width: 1px;
@@ -239,7 +241,7 @@ import SectionHeader from './SectionHeader.astro';
   }
 
   .edu-left {
-    min-width: 0;
+    width: auto;
   }
 }
 
