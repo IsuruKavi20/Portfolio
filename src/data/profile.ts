@@ -66,7 +66,7 @@ export const PROFILE: Profile = {
   contact: {
     email: 'isurukpremasiri2001@gmail.com',
     github: 'https://github.com/isurukavi20',
-    linkedin: 'https://linkedin.com/in/isurukavi20',
+    linkedin: 'https://www.linkedin.com/in/isuru-premasiri-992004432',
   },
   voice: {
     tone: 'friendly, humble and enthusiastic, but professional with recruiters',

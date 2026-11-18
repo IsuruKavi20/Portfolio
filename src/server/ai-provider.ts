@@ -46,7 +46,10 @@ export const demoProvider: AiProvider = {
       };
     }
     if (has('cv', 'resume', 'résumé')) {
-      return { text: `Here is my CV. ${DEMO_NOTE}`, actions: [{ type: 'offer_cv' }] };
+      return {
+        text: `My CV is coming soon. Meanwhile, you can message me through the contact form. ${DEMO_NOTE}`,
+        actions: [{ type: 'scroll_to', section: 'contact' }],
+      };
     }
     if (has('hire', 'contact', 'email', 'reach', 'intern')) {
       return {
