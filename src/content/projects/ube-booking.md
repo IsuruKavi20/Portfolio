@@ -28,7 +28,7 @@ UBE is a marketplace where vendors list what they offer (hotel rooms, rental car
 
 **System architecture.** I set up the backend on .NET 10 using Clean Architecture: Domain (entities and rules), Application (features), Infrastructure (database, email, SMS, storage, payments) and API. Code is organised by feature (bookings, payments, reviews and so on), so each teammate could own a module without stepping on others. I also wrote the frontend contribution guide: folder structure, naming rules, linting and formatting.
 
-**UI and backend planning.** I planned the screens and the API together, then rebuilt the landing page with a 3D animated hero and a floating navbar, redesigned the search and product pages, and unified the design system across the customer, vendor and admin portals.
+**UI and backend planning.** I planned the screens and the API together, splitting the work into modules with clear boundaries so everyone knew what they owned. On the UI side I rebuilt the landing page, reworked the search and product pages, and kept the customer, vendor and admin portals consistent.
 
 ### Modules I built
 

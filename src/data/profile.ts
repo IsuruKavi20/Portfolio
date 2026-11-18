@@ -47,15 +47,15 @@ export const PROFILE: Profile = {
   headline: 'IT student at the University of Moratuwa who learns by building',
   location: 'Sri Lanka',
   about:
-    "I'm an IT student at the University of Moratuwa who learns by building, and I love designing clean, smooth screens. " +
-    'I like owning the whole picture: designing the interface, planning the system architecture, and deploying it securely to the cloud. ' +
-    "In team projects I usually take the architecture, UI and deployment side, and I've built a complete authentication service on my own. " +
-    "I'm also starting to learn cybersecurity and networking, and I try to build security into everything I make.",
+    "I'm an IT student at the University of Moratuwa who learns by building. I enjoy the big picture most: designing the system architecture, then deploying it and keeping it running in the cloud. " +
+    'I work with Docker, Kubernetes, CI/CD pipelines, AWS and Oracle Cloud, and I care about doing it securely. ' +
+    "In team projects I usually take the architecture and deployment side, and help with the UI, and I've built a complete authentication service on my own. " +
+    "I'm still learning Java and .NET development, networking and the basics of cybersecurity, and I enjoy every step of it.",
   strengths: [
-    'UI design: clean, mobile-first interfaces (SwiftDrop redesign, UBE landing page, this portfolio)',
+    'Deployment (my favourite part): Docker, Kubernetes (k3s, OKE, Helm), AWS, Oracle Cloud, Google Cloud Run and Vercel, with CI/CD pipelines, secrets management, backups and automatic rollback',
     'System architecture: Clean Architecture in .NET (UBE) and modular Spring Boot (SwiftDrop)',
     'Authentication and security: built the SwiftDrop auth service alone (OAuth 2.0, OIDC, JWT, Argon2id, audit log)',
-    'Cloud deployment: AWS, Oracle Cloud Kubernetes, Google Cloud Run and Vercel, with CI/CD and automatic rollback',
+    'UI: clean, mobile-first screens (SwiftDrop, UBE, Hirujaya, this portfolio)',
     'Team work: top contributor in both team projects, writing structure and guides so the team can build in parallel',
   ],
   education: [
@@ -72,9 +72,9 @@ export const PROFILE: Profile = {
     'Vercel (auto-deploy from Git, preview and production)', 'AWS (EC2, S3, CloudFront, RDS)', 'Oracle Cloud (OKE)', 'Kubernetes (k3s, Helm)', 'Google Cloud Run', 'Docker containers',
     'GitHub Actions CI/CD', 'Secrets and environment variables', 'Firewall and rate limiting', 'Automated database backups',
   ],
-  currentlyLearning: ['Cybersecurity basics (just started)', 'Networking', 'Building AI features into web apps (like this assistant)'],
-  interests: ['UI design', 'System architecture', 'Networking and cloud deployment', 'Cybersecurity (beginner)', 'Microcontrollers and IoT'],
-  lookingFor: 'An internship where I can learn and build real things: web apps, UI, systems or cloud',
+  currentlyLearning: ['Java and .NET development', 'Networking', 'Cybersecurity basics (just started)', 'More DevOps practice: monitoring and infrastructure as code'],
+  interests: ['System architecture', 'Deployment and cloud', 'Networking', 'Cybersecurity (beginner)', 'Microcontrollers and IoT'],
+  lookingFor: 'An internship where I can learn and work on real things, ideally deployment, cloud and DevOps work, or backend development',
   availability: 'Open to internships and collaborations',
   contact: {
     email: 'isurukpremasiri2001@gmail.com',

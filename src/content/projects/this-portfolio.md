@@ -4,7 +4,7 @@ summary: "The site you are on: a fast, mobile-first portfolio with an AI assista
 order: 4
 status: "Live"
 year: "2026"
-role: "Design, development, security and deployment (solo)"
+role: "UI, development, security and deployment (solo)"
 teamSize: "Solo"
 tech: ["astro", "typescript", "tailwind", "gsap", "threejs", "gemini", "zod", "vitest", "vercel"]
 links:
@@ -33,7 +33,7 @@ A portfolio should prove what I can do, not just list it. I wanted a site that f
 
 ### Smooth on every device
 
-- **Mobile-first** design in a dark, minimal theme.
+- **Mobile-first**, in a dark, minimal theme.
 - The site checks what the device can handle and picks a **quality level**, so the 3D particle sphere and **GSAP** animations stay smooth even on low-end phones, and turn off for people who prefer reduced motion.
 - Smooth scrolling only on mouse devices; touch scrolling stays native.
 - Built with **Astro**, so pages ship as fast static HTML with very little JavaScript.

@@ -1,10 +1,10 @@
 ---
 title: "SwiftDrop"
-summary: "A parcel delivery platform built by a student team. I led the architecture, the UI design and the AWS deployment, and built its authentication service alone, running on Oracle Cloud."
+summary: "A parcel delivery platform built by a student team. I worked on the architecture, the UI and the AWS deployment, and built its authentication service alone, running on Oracle Cloud."
 order: 1
 status: "Live"
 year: "2026"
-role: "Architecture, UI design and AWS deployment; built the auth service solo"
+role: "Architecture, UI and AWS deployment; built the auth service solo"
 teamSize: "Team"
 tech: ["react", "typescript", "vite", "java", "spring", "springsecurity", "postgresql", "redis", "rabbitmq", "flyway", "docker", "kubernetes", "helm", "aws", "oci", "githubactions", "playwright"]
 links:
@@ -21,7 +21,7 @@ gallery:
     alt: "Customer portal asking a new user to add a phone number and address"
     caption: "Customer portal: first-time profile setup (sample details)"
 highlights:
-  - "Team project: I designed the architecture, led the UI and deployed the platform to AWS"
+  - "Team project: I designed the architecture, worked on the UI and deployed the platform to AWS"
   - "Built the authentication service from scratch, alone: signed tokens, Google sign-in, roles, merchant API access, audit log"
   - "Security-first auth: Argon2id passwords, breached-password check, refresh-token theft detection, rate limits, 346 automated tests"
   - "Auth service on Oracle Cloud Kubernetes: two replicas, default-deny network firewall, encrypted database, nightly encrypted backups"
@@ -38,7 +38,7 @@ SwiftDrop is a parcel delivery platform made by a university team of more than t
 
 **Architecture.** I designed the backend as one Spring Boot application made of modules (identity, customers, merchants, pricing, dispatch, notifications) with strict rules about how they talk to each other. A Spring Modulith test checks those rules on every pull request, so the codebase stays clean as the team grows. Modules share news through events instead of calling each other, with RabbitMQ carrying the messages and an outbox so no event is lost.
 
-**UI design.** I led the visual design and gave the landing page, sign-in pages and customer portal a professional refresh, with a new logo and consistent styling, and fixed sign-in flows across customer, merchant and admin views.
+**UI.** I refreshed the landing page, sign-in pages and customer portal with consistent styling and a new logo, and fixed sign-in flows across the customer, merchant and admin views.
 
 ## The authentication service (built alone)
 

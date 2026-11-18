@@ -4,7 +4,7 @@ summary: "A ground-up rebuild of a solar company's sales and operations system: 
 order: 2
 status: "Live"                 # TODO: confirm (the public version is a demo with made-up data)
 year: "2026"
-role: "Solo developer: design, build, security and deployment"
+role: "Built alone: architecture, UI, development, security and deployment"
 tech: ["nextjs", "typescript", "react", "tailwind", "shadcn", "threejs", "postgresql", "prisma", "redis", "authjs", "inngest", "zod", "vitest", "playwright", "docker", "cloudrun", "r2", "sentry"]
 links:
   live: "https://hirujaya-erp-demo-345017909453.asia-southeast1.run.app"   # public demo, made-up data
