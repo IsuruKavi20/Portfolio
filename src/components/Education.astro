@@ -13,47 +13,61 @@ import SectionHeader from './SectionHeader.astro';
         prefix="edu"
         label="Academic Background"
         title="Education"
-        description="My academic foundation in information technology continues to shape how I approach design, development, and interactive digital experiences."
+        description="From school in Kegalle to information technology at the University of Moratuwa: the foundation behind how I design, build and deploy."
       />
 
     </div>
 
-    <!-- Education card -->
-    <div id="edu-card" class="edu-card" data-reveal>
+    <!-- Education cards (newest first); the list reveals as one block -->
+    <div id="edu-card" class="edu-list" data-reveal>
 
-      <!-- Glowing top bar (matches project/skill card) -->
-      <div class="edu-bar"></div>
-
-      <div class="edu-card-inner">
-
-        <!-- Left: institution info -->
-        <div class="edu-left">
-          <p class="edu-year">2023 — Present</p>
-
-          <h3 class="edu-institution">University of Moratuwa</h3>
-
-          <p class="edu-degree">IT Undergraduate</p>
-
-          <!-- Vertical divider line -->
-          <div id="edu-divider" class="edu-divider"></div>
-        </div>
-
-        <!-- Right: description + tags -->
-        <div class="edu-right">
-          <p class="edu-body">
-            Currently pursuing undergraduate studies in Information Technology,
-            with growing interests in frontend development, UI design, motion,
-            and building clean digital experiences for the web.
-          </p>
-
-          <div class="edu-tags">
-            <span class="edu-tag">Web Development</span>
-            <span class="edu-tag">UI Design</span>
-            <span class="edu-tag">Interactive Experiences</span>
+      <article class="edu-card">
+        <div class="edu-bar"></div>
+        <div class="edu-card-inner">
+          <div class="edu-left">
+            <p class="edu-year">2023 — Present</p>
+            <h3 class="edu-institution">University of Moratuwa</h3>
+            <p class="edu-degree">BSc (Hons) in Information Technology · Faculty of IT</p>
+            <div class="edu-divider"></div>
+          </div>
+          <div class="edu-right">
+            <p class="edu-body">
+              Studying software engineering, databases, networking and system design. Through team
+              projects I have led system architecture, UI design and cloud deployment: a booking
+              marketplace in .NET and React, and a parcel delivery platform on AWS and Oracle Cloud.
+            </p>
+            <div class="edu-tags">
+              <span class="edu-tag">Software Engineering</span>
+              <span class="edu-tag">System Architecture</span>
+              <span class="edu-tag">Networking</span>
+              <span class="edu-tag">UI Design</span>
+              <span class="edu-tag">Team Projects</span>
+            </div>
           </div>
         </div>
+      </article>
 
-      </div>
+      <article class="edu-card">
+        <div class="edu-bar"></div>
+        <div class="edu-card-inner">
+          <div class="edu-left">
+            <p class="edu-year">2013 — 2020</p>
+            <h3 class="edu-institution">St. Mary's College, Kegalle</h3>
+            <p class="edu-degree">G.C.E. Advanced Level &amp; Ordinary Level</p>
+            <div class="edu-divider"></div>
+          </div>
+          <div class="edu-right">
+            <p class="edu-body">
+              Completed my school education here, sitting both the G.C.E. Ordinary Level and
+              Advanced Level examinations. This is where my interest in computers and technology began.
+            </p>
+            <div class="edu-tags">
+              <span class="edu-tag">G.C.E. A/L</span>
+              <span class="edu-tag">G.C.E. O/L</span>
+            </div>
+          </div>
+        </div>
+      </article>
 
     </div>
 
@@ -80,6 +94,13 @@ import SectionHeader from './SectionHeader.astro';
   padding: 48px;
   overflow: hidden;
   transition: background 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+/* Both cards slide in together (sections.js reveals #edu-card) */
+.edu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   transform: translateY(30px);
 }
 

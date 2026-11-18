@@ -48,7 +48,10 @@ export const PROFILE: Profile = {
     "I'm an IT undergraduate at the University of Moratuwa who loves building things for the web. " +
     'I care about the details: smooth motion, clean layouts and code that actually works for real people. ' +
     "I've worked on full-stack projects with React, Java and Spring Boot, and I enjoy figuring out how systems work from the inside.",
-  education: ['BSc (Hons) in Information Technology, University of Moratuwa (2023 – present)'],
+  education: [
+    'BSc (Hons) in Information Technology, Faculty of IT, University of Moratuwa (2023 – present)',
+    "G.C.E. Advanced Level and Ordinary Level, St. Mary's College, Kegalle (2013 – 2020)",
+  ],
   gpa: '',
   skills: [
     'HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Astro', 'Tailwind CSS', 'shadcn/ui', 'Material UI', 'GSAP', 'Three.js',
@@ -59,8 +62,8 @@ export const PROFILE: Profile = {
     'Vercel (auto-deploy from Git, preview and production)', 'AWS (EC2, S3, CloudFront, RDS)', 'Oracle Cloud (OKE)', 'Kubernetes (k3s, Helm)', 'Google Cloud Run', 'Docker containers',
     'GitHub Actions CI/CD', 'Secrets and environment variables', 'Firewall and rate limiting', 'Automated database backups',
   ],
-  currentlyLearning: ['Building AI features into web apps (like this assistant)', 'Advanced web animation'],
-  interests: ['Interactive web design and motion', 'Full-stack development', 'Microcontrollers and IoT'],
+  currentlyLearning: ['Cybersecurity basics (just started)', 'Networking', 'Building AI features into web apps (like this assistant)'],
+  interests: ['UI design', 'System architecture', 'Networking and cloud deployment', 'Cybersecurity (beginner)', 'Microcontrollers and IoT'],
   lookingFor: 'An internship as a frontend or full-stack developer',
   availability: 'Open to internships and collaborations',
   contact: {
