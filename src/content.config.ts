@@ -15,7 +15,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { TECH_IDS } from './data/tech';
 
-const STATUSES = ['Live', 'In Progress', 'Coming Soon', 'Concept'] as const;
+const STATUSES = ['Live', 'Live Demo', 'Completed', 'In Progress', 'Coming Soon', 'Concept'] as const;
 
 const projects = defineCollection({
   // Files starting with "_" (the template) are ignored

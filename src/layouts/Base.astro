@@ -15,6 +15,9 @@ const {
   title = 'Isuru K. Premasiri | Portfolio',
   description = 'Isuru K. Premasiri, an IT student at the University of Moratuwa who learns by building: clean screens, solid systems and secure cloud apps.',
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og-image.png', Astro.site).href;
 ---
 
 <!doctype html>
@@ -30,6 +33,19 @@ const {
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
+
+    <!-- Link previews (LinkedIn, WhatsApp, X, Slack): title, text and image -->
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Isuru K. Premasiri" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Isuru K. Premasiri: I plan how a system fits together, then take it to the cloud and keep it running." />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <!-- Runs before first paint: animation allowed? already entered? quality tier?
          Its exact text is fingerprinted in astro.config.mjs for the security policy. -->

@@ -12,7 +12,7 @@
 title: "Project name"
 summary: "One or two sentences: what it is and who it is for. Max 200 characters."
 order: 4                     # position on the home page (1 = first)
-status: "In Progress"        # Live | In Progress | Coming Soon | Concept
+status: "In Progress"        # Live | Live Demo | Completed | In Progress | Coming Soon | Concept
 year: "2026"
 role: "Built the frontend and the login" # what YOU did
 

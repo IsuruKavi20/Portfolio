@@ -19,6 +19,9 @@ const IS_BUILD = process.argv.includes('build');
 
 // https://astro.build/config
 export default defineConfig({
+  // The real address: used for link previews and the sitemap
+  site: 'https://isurukavi.vercel.app',
+
   // Every page stays a static file. Only files that say
   // `export const prerender = false` (the /api routes) run on Vercel's server.
   // staticHeaders: the security policy below is sent as a real HTTP header.

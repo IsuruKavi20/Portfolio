@@ -2,7 +2,7 @@
 title: "Hirujaya Green Energy Sales Platform"
 summary: "A ground-up rebuild of a solar company's sales and operations system: quotations, payments, invoices, commissions and reports, built mobile-first for field staff."
 order: 2
-status: "Live"                 # TODO: confirm (the public version is a demo with made-up data)
+status: "Live Demo"            # the public version is a demo with made-up data
 year: "2026"
 role: "Built alone: architecture, UI, development, security and deployment"
 tech: ["nextjs", "typescript", "react", "tailwind", "shadcn", "threejs", "postgresql", "prisma", "redis", "authjs", "inngest", "zod", "vitest", "playwright", "docker", "cloudrun", "r2", "sentry"]

@@ -2,7 +2,7 @@
 title: "UBE Booking Platform"
 summary: "A multi-vendor booking marketplace for hotels, car rentals, events, activities and restaurants. I designed the architecture, planned the UI and backend, and built core modules."
 order: 3
-status: "Concept"
+status: "Completed"
 year: "2026"
 role: "System architecture, UI and backend planning, and core modules (team project)"
 teamSize: "Team"
