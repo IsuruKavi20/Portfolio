@@ -22,6 +22,7 @@ export interface Profile {
   /** what I'm good at, each backed by a real project */
   strengths: string[];
   education: string[];
+  certifications: string[];
   /** e.g. "3.55 / 4.0"; empty = not shared */
   gpa: string;
   skills: string[];
@@ -59,10 +60,18 @@ export const PROFILE: Profile = {
     'Team work: top contributor in both team projects, writing structure and guides so the team can build in parallel',
   ],
   education: [
-    'BSc (Hons) in Information Technology, Faculty of IT, University of Moratuwa (2023 - present)',
+    'BSc (Hons) in Information Technology, Faculty of IT, University of Moratuwa (2023 - 2028, expected)',
     "G.C.E. Advanced Level and Ordinary Level, St. Mary's College, Kegalle (2013 - 2020)",
   ],
-  gpa: '',
+  certifications: [
+    'AWS Cloud Technical Essentials (Amazon Web Services, 2026)',
+    'Docker for Beginners with Hands-on Labs (KodeKloud, 2026)',
+    'Jenkins for Beginners (KodeKloud, 2026)',
+    'Git Basics for DevOps (KodeKloud, 2026)',
+    'Networking Basics (Cisco Networking Academy, 2026)',
+    'Introduction to Cybersecurity (Cisco Networking Academy, 2026)',
+  ],
+  gpa: '3.65 CGPA',
   skills: [
     'HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Astro', 'Tailwind CSS', 'shadcn/ui', 'Material UI', 'GSAP', 'Three.js',
     'Node.js', 'Java', 'Spring Boot', 'Spring Security (OAuth 2.0, OIDC, JWT)', 'Flyway', 'Python', 'ASP.NET Core (.NET, C#)', 'Entity Framework Core', 'SignalR (real-time)', 'Prisma', 'Auth.js', 'Inngest (background jobs)', 'REST APIs', 'Gemini API',

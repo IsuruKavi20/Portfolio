@@ -88,8 +88,12 @@ export function initAskIsuru() {
   function addCvButton() {
     const item = document.createElement("li");
     item.className = "bot-msg bot-msg-bot bot-msg-card";
-    // The CV is not ready yet. When cv.pdf is ready, make this a download link again.
-    item.textContent = "My CV is coming soon.";
+    const link = document.createElement("a");
+    link.href = "/cv.pdf";
+    link.download = "Isuru_Premasiri_CV.pdf";
+    link.className = "bot-card-link";
+    link.textContent = "Download CV ↓";
+    item.append(link);
     log.append(item);
     log.scrollTop = log.scrollHeight;
   }

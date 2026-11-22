@@ -57,6 +57,7 @@ export function buildKnowledge(profile: Profile, projects: ProjectFacts[]): stri
     `Strengths: ${listOrUnknown(profile.strengths)}`,
     `Education: ${listOrUnknown(profile.education)}`,
     `GPA: ${textOrUnknown(profile.gpa)}`,
+    `Certifications: ${listOrUnknown(profile.certifications)}`,
     `Skills: ${listOrUnknown(profile.skills)}`,
     `Currently learning: ${listOrUnknown(profile.currentlyLearning)}`,
     `Interests: ${listOrUnknown(profile.interests)}`,

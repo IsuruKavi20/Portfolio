@@ -13,7 +13,7 @@ import SectionHeader from './SectionHeader.astro';
         prefix="edu"
         label="Academic Background"
         title="Education"
-        description="From school in Kegalle to information technology at the University of Moratuwa: the foundation behind how I plan, build and deploy."
+        description="From school in Kegalle to the University of Moratuwa, plus the courses I take on my own: the foundation behind how I plan, build and deploy."
       />
 
     </div>
@@ -25,9 +25,9 @@ import SectionHeader from './SectionHeader.astro';
         <div class="edu-bar"></div>
         <div class="edu-card-inner">
           <div class="edu-left">
-            <p class="edu-year">2023 - Present</p>
+            <p class="edu-year">2023 - 2028 (expected)</p>
             <h3 class="edu-institution">University of Moratuwa</h3>
-            <p class="edu-degree">BSc (Hons) in Information Technology · Faculty of IT</p>
+            <p class="edu-degree">BSc (Hons) in Information Technology · Faculty of IT · CGPA 3.65</p>
             <div class="edu-divider"></div>
           </div>
           <div class="edu-right">
@@ -43,6 +43,28 @@ import SectionHeader from './SectionHeader.astro';
               <span class="edu-tag">Cloud Deployment</span>
               <span class="edu-tag">Team Projects</span>
             </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="edu-card">
+        <div class="edu-bar"></div>
+        <div class="edu-card-inner">
+          <div class="edu-left">
+            <p class="edu-year">2026</p>
+            <h3 class="edu-institution">Certifications</h3>
+            <p class="edu-degree">Courses I took to keep learning</p>
+            <div class="edu-divider"></div>
+          </div>
+          <div class="edu-right">
+            <ul class="edu-certs">
+              <li><span class="edu-cert-name">AWS Cloud Technical Essentials</span><span class="edu-cert-by">Amazon Web Services</span></li>
+              <li><span class="edu-cert-name">Docker for Beginners with Hands-on Labs</span><span class="edu-cert-by">KodeKloud</span></li>
+              <li><span class="edu-cert-name">Jenkins for Beginners</span><span class="edu-cert-by">KodeKloud</span></li>
+              <li><span class="edu-cert-name">Git Basics for DevOps</span><span class="edu-cert-by">KodeKloud</span></li>
+              <li><span class="edu-cert-name">Networking Basics</span><span class="edu-cert-by">Cisco Networking Academy</span></li>
+              <li><span class="edu-cert-name">Introduction to Cybersecurity</span><span class="edu-cert-by">Cisco Networking Academy</span></li>
+            </ul>
           </div>
         </div>
       </article>
@@ -202,6 +224,41 @@ import SectionHeader from './SectionHeader.astro';
   color: rgba(255, 255, 255, 0.6);
   font-family: 'Inter', sans-serif;
   margin-bottom: 28px;
+}
+
+/* Certification list: name on the left, who issued it on the right */
+.edu-certs {
+  display: flex;
+  flex-direction: column;
+}
+
+.edu-certs li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.edu-certs li:first-child {
+  padding-top: 0;
+}
+
+.edu-certs li:last-child {
+  border-bottom: 0;
+}
+
+.edu-cert-name {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.edu-cert-by {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
 .edu-tags {

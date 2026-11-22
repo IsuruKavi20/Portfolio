@@ -11,6 +11,7 @@ const profile: Profile = {
   about: 'Builds things.',
   strengths: ['UI design'],
   education: ['Some university'],
+  certifications: ['Docker basics'],
   gpa: '',
   skills: ['React'],
   currentlyLearning: [],

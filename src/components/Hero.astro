@@ -44,13 +44,10 @@ import portrait from '../assets/images/portrait.png';
 
         <span class="social-divider"></span>
 
-        <!-- CV button: the CV is not ready yet, so a click only says "Coming soon".
-             When cv.pdf is ready, turn this back into:
-             <a href="/cv.pdf" download="Isuru_K_Premasiri_CV.pdf" class="cv-btn">Download CV</a> -->
-        <button type="button" class="cv-btn" data-cv-soon aria-describedby="cv-soon-note">
+        <!-- Download CV Button -->
+        <a href="/cv.pdf" download="Isuru_Premasiri_CV.pdf" class="cv-btn">
           Download CV
-        </button>
-        <span id="cv-soon-note" class="sr-only">My CV is coming soon.</span>
+        </a>
 
       </div>
 
@@ -258,15 +255,3 @@ import portrait from '../assets/images/portrait.png';
 }
 
 </style>
-
-<script>
-  // The CV is not ready yet: a click shows "Coming soon" for a moment.
-  const SOON_MS = 1800;
-  document.querySelectorAll<HTMLButtonElement>('[data-cv-soon]').forEach((button) => {
-    const label = button.textContent?.trim() ?? 'Download CV';
-    button.addEventListener('click', () => {
-      button.textContent = 'Coming soon';
-      window.setTimeout(() => { button.textContent = label; }, SOON_MS);
-    });
-  });
-</script>
