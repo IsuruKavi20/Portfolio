@@ -10,6 +10,15 @@ tech: ["react", "typescript", "vite", "mui", "tailwind", "dotnet", "efcore", "sq
 links:
   github: "https://github.com/SkyteIT/booking-frontend"
   githubBackend: "https://github.com/SkyteIT/booking-backend"
+cover: "./images/ube-login.png"
+coverAlt: "UBE sign-in page: a frosted glass login card over a resort pool, with Google sign-in"
+gallery:
+  - src: "./images/ube-home.png"
+    alt: "UBE home page: a large Book hotels instantly heading, floating category cards and a search bar"
+    caption: "Home page: one search for hotels, cars, events, activities and restaurants"
+  - src: "./images/ube-dashboard.png"
+    alt: "Customer dashboard showing total bookings, upcoming bookings and reviews given"
+    caption: "Customer dashboard with bookings at a glance (sample data)"
 highlights:
   - "Second-year university team project; not deployed live"
   - "I designed the Clean Architecture backend (Domain, Application, Infrastructure, API) and planned the UI and backend"
