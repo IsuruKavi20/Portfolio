@@ -11,7 +11,7 @@
   --fg-strong: rgba(255, 255, 255, 0.88);
   --fg-muted: rgba(255, 255, 255, 0.62);
   --fg-soft: rgba(255, 255, 255, 0.58);
-  --fg-faint: rgba(255, 255, 255, 0.45);
+  --fg-faint: rgba(255, 255, 255, 0.5); /* 5.3:1 on black: passes WCAG AA for small text */
 
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.2);
