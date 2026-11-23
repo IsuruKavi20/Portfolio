@@ -53,17 +53,17 @@ import SectionHeader from './SectionHeader.astro';
           <div class="edu-left">
             <p class="edu-year">2026</p>
             <h3 class="edu-institution">Certifications</h3>
-            <p class="edu-degree">Courses I took to keep learning</p>
+            <p class="edu-degree">Courses I took to keep learning · tap one to verify</p>
             <div class="edu-divider"></div>
           </div>
           <div class="edu-right">
             <ul class="edu-certs">
-              <li><span class="edu-cert-name">AWS Cloud Technical Essentials</span><span class="edu-cert-by">Amazon Web Services</span></li>
-              <li><span class="edu-cert-name">Docker for Beginners with Hands-on Labs</span><span class="edu-cert-by">KodeKloud</span></li>
-              <li><span class="edu-cert-name">Jenkins for Beginners</span><span class="edu-cert-by">KodeKloud</span></li>
-              <li><span class="edu-cert-name">Git Basics for DevOps</span><span class="edu-cert-by">KodeKloud</span></li>
-              <li><span class="edu-cert-name">Networking Basics</span><span class="edu-cert-by">Cisco Networking Academy</span></li>
-              <li><span class="edu-cert-name">Introduction to Cybersecurity</span><span class="edu-cert-by">Cisco Networking Academy</span></li>
+              <li><a class="edu-cert-name" href="https://www.coursera.org/account/accomplishments/verify/3W1QQ267XVTS" target="_blank" rel="noopener noreferrer">AWS Cloud Technical Essentials<span class="edu-cert-verify" aria-hidden="true"> ↗</span><span class="sr-only"> (verify certificate, opens in a new tab)</span></a><span class="edu-cert-by">Amazon Web Services</span></li>
+              <li><a class="edu-cert-name" href="https://www.coursera.org/account/accomplishments/verify/JDRJ08F9GI7B" target="_blank" rel="noopener noreferrer">Docker for Beginners with Hands-on Labs<span class="edu-cert-verify" aria-hidden="true"> ↗</span><span class="sr-only"> (verify certificate, opens in a new tab)</span></a><span class="edu-cert-by">KodeKloud</span></li>
+              <li><a class="edu-cert-name" href="https://www.coursera.org/account/accomplishments/verify/M67T7FLDIYFQ" target="_blank" rel="noopener noreferrer">Jenkins for Beginners<span class="edu-cert-verify" aria-hidden="true"> ↗</span><span class="sr-only"> (verify certificate, opens in a new tab)</span></a><span class="edu-cert-by">KodeKloud</span></li>
+              <li><a class="edu-cert-name" href="https://www.coursera.org/account/accomplishments/verify/HNZ5AC2057EL" target="_blank" rel="noopener noreferrer">Git Basics for DevOps<span class="edu-cert-verify" aria-hidden="true"> ↗</span><span class="sr-only"> (verify certificate, opens in a new tab)</span></a><span class="edu-cert-by">KodeKloud</span></li>
+              <li><a class="edu-cert-name" href="https://www.credly.com/badges/64ce4a42-3565-48ee-bb37-722a2afa18a5" target="_blank" rel="noopener noreferrer">Networking Basics<span class="edu-cert-verify" aria-hidden="true"> ↗</span><span class="sr-only"> (verify certificate, opens in a new tab)</span></a><span class="edu-cert-by">Cisco Networking Academy</span></li>
+              <li><a class="edu-cert-name" href="https://www.credly.com/badges/339eeaab-70c3-4655-b964-0233fce55049" target="_blank" rel="noopener noreferrer">Introduction to Cybersecurity<span class="edu-cert-verify" aria-hidden="true"> ↗</span><span class="sr-only"> (verify certificate, opens in a new tab)</span></a><span class="edu-cert-by">Cisco Networking Academy</span></li>
             </ul>
           </div>
         </div>
@@ -252,6 +252,20 @@ import SectionHeader from './SectionHeader.astro';
 .edu-cert-name {
   color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
+}
+
+a.edu-cert-name {
+  transition: color 0.2s ease;
+}
+
+a.edu-cert-name:hover,
+a.edu-cert-name:focus-visible {
+  color: #fff;
+}
+
+.edu-cert-verify {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
 }
 
 .edu-cert-by {
